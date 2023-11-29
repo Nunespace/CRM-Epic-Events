@@ -127,7 +127,7 @@ class Menu:
                 self.clean()
                 print()
             else:
-                if option < 1 or option > 5:
+                if option < 1 or option > len(menu_options):
                     print("Vous devez taper un nombre correspondant au menu.")
                     time.sleep(2)
                     self.clean()

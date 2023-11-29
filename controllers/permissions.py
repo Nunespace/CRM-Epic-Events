@@ -16,7 +16,7 @@ class Permissions:
             return False
 
     def permission_create(self, token, table):
-        if self.check_token_validity(token):
+        if self.check_token_validity(token) is not False:
             token_decode = self.check_token_validity(token)
             department = token_decode["department"]
             if table == "client" or table == "event":
@@ -33,7 +33,6 @@ class Permissions:
                 print("1111111")
                 return False
         else:
-            print("22222222222")
             return False
 
     def permission_update(self, staff_id, object_id, token, table):

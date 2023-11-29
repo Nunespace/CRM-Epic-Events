@@ -101,7 +101,7 @@ class CrudManager:
                     return False
                 elif option == 3:
                     id = self.get_datas.get_id(table)
-                    event = client_repository.find_by_id(id)
+                    event = event_repository.find_by_id(id)
                     if event is not None:
                         self.display.display_one_object(event)
                         return True
@@ -138,7 +138,7 @@ class CrudManager:
                 elif option == 3:
                     id = self.get_datas.get_id(table)
                     contract = contract_repository.find_by_id(id)
-                    if event is not None:
+                    if contract is not None:
                         self.display.display_one_object(contract)
                         return True
                     return False
