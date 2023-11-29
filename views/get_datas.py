@@ -59,7 +59,13 @@ class GetDatas:
 
     def get_password(self):
         password = input("Veuillez créer un mot de passe : ")
-        while re.fullmatch(r"^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$", password) is None:
+        while (
+            re.fullmatch(
+                r"^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$",
+                password,
+            )
+            is None
+        ):
             print(
                 "Le mot de passe doit être formé d'un minimum de 8 caractères, "
                 "au moins une lettre majuscule, "
@@ -80,7 +86,12 @@ class GetDatas:
             phone_input = int(input("Téléphone : "))
             phone = self.check_phone(phone_input)
             name_company = input("Nom de l'entreprise : ")
-            datas = {"fullname": fullname, "email": email, "phone": phone, "name_company": name_company}
+            datas = {
+                "fullname": fullname,
+                "email": email,
+                "phone": phone,
+                "name_company": name_company,
+            }
             return datas
         elif table == "event":
             print("Veuillez taper les données suivantes.")
@@ -111,7 +122,9 @@ class GetDatas:
             total_amount = self.chek_number(total_amount)
             balance_due = input("Montant restant à payer : ")
             balance_due = self.chek_number(balance_due)
-            status_input = input("Contrat signé? Taper 1 pour OUI, 2 pour NON : ")
+            status_input = input(
+                "Contrat signé? Taper 1 pour OUI, 2 pour NON : "
+            )
             status = self.check_status(status_input)
             datas = {
                 "client_id": client_id,
@@ -145,7 +158,10 @@ class GetDatas:
         return date_time
 
     def chek_email(self, email):
-        while re.fullmatch(r"[a-z0-9._-]+@[a-z0-9._-]+\.[a-z0-9._-]+", email) is None:
+        while (
+            re.fullmatch(r"[a-z0-9._-]+@[a-z0-9._-]+\.[a-z0-9._-]+", email)
+            is None
+        ):
             print("Veuillez taper un email valide. Exemple : alice@gmail.com")
             email = input("Email : ")
         return email
@@ -158,20 +174,26 @@ class GetDatas:
 
     def chek_phone(self, phone):
         while re.fullmatch(r"[0-9]+", phone) is None:
-            print("Le n° de téléphone doit être composé uniquement de chiffres, sans espaces.")
+            print(
+                "Le n° de téléphone doit être composé uniquement de chiffres, sans espaces."
+            )
             phone = input("N° de téléphone : ")
         return int(phone)
 
     def chek_number(self, number_input):
         while re.fullmatch(r"[0-9]+", number_input) is None:
-            print("Le montant doit être composé uniquement de chiffres, sans espaces.")
+            print(
+                "Le montant doit être composé uniquement de chiffres, sans espaces."
+            )
             number_input = input("Montant : ")
         return int(number_input)
 
     def check_status(self, status_input):
         while re.fullmatch(r"[1-2]", status_input) is None:
             print()
-            status_input = input("Contrat signé? Merci de taper 1 pour OUI ou 2 pour NON : ")
+            status_input = input(
+                "Contrat signé? Merci de taper 1 pour OUI ou 2 pour NON : "
+            )
         if status_input == "1":
             return True
         elif status_input == "2":
@@ -189,7 +211,9 @@ class GetDatas:
             return new_value
 
     def get_support_contact(self):
-        support_contact = input("Veuillez taper le nom ou l'id du collaborateur support de l'évènement")
+        support_contact = input(
+            "Veuillez taper le nom ou l'id du collaborateur support de l'évènement : "
+        )
         return support_contact
 
     def clean(self):
@@ -203,6 +227,8 @@ class GetDatas:
         print("Liste des départements : ")
         for department in Department:
             print(f"{department.name} : {department.value}")
-        department_number = input("Veuillez entrer le n° du département choisi : ")
+        department_number = input(
+            "Veuillez entrer le n° du département choisi : "
+        )
         department = Department(int(department_number))
         return department.name

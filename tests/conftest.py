@@ -5,21 +5,35 @@ from models.models import Staff
 
 
 @pytest.fixture
-def user_credentials_fixture():
-    data = {"email": "sarah@gmail.com", "password": "essai"}
-    return data
+def staff_user_commercial_and_token_fixture():
+    staff_user = (
+        SESSION.query(Staff).filter(Staff.email == "s@g.c").one_or_none()
+    )
+    token = AuthenticationAndPermissions().create_token(
+        department=staff_user.department.name
+    )
+    return staff_user, token
 
 
 @pytest.fixture
-def staff_user_and_token_fixture():
-    staff_user = SESSION.query(Staff).filter(Staff.email == "s@g.c").one_or_none()
-    token = AuthenticationAndPermissions().create_token(department=staff_user.department.name)
+def staff_user_management_and_token_fixture():
+    staff_user = (
+        SESSION.query(Staff).filter(Staff.email == "jeanl@g.c").one_or_none()
+    )
+    token = AuthenticationAndPermissions().create_token(
+        department=staff_user.department.name
+    )
     return staff_user, token
 
 
 @pytest.fixture
 def get_datas_create_client_fixture():
-    datas = {"fullname": "Cyril Dupont", "email": "dupont@orange.fr", "phone": 234344565, "name_company": "Tintin Cie"}
+    datas = {
+        "fullname": "Cyril Dupont",
+        "email": "dupont@orange.fr",
+        "phone": 234344565,
+        "name_company": "Tintin Cie",
+    }
     return datas
 
 
