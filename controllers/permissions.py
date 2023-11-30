@@ -12,7 +12,7 @@ class Permissions:
         try:
             return jwt.decode(token, SECRET, algorithms="HS256")
         except jwt.ExpiredSignatureError:
-            self.messages.message_error(message_number=2)
+            self.messages.message_error(table=None, message_number=2)
             return False
 
     def permission_create(self, token, table):
@@ -24,8 +24,10 @@ class Permissions:
                     return True
                 else:
                     return False
-            
-            elif (table == "contract" or table == "staff") and department == "MANAGEMENT":
+
+            elif (
+                table == "contract" or table == "staff"
+            ) and department == "MANAGEMENT":
                 print("table :", table, "department :", department)
                 return True
             else:
@@ -41,10 +43,14 @@ class Permissions:
             department = token_decode["department"]
             print("department : ", department)
             if table == "client":
-                return department == "COMMERCIAL" and self.is_own_client(staff_id, object_id)
+                return department == "COMMERCIAL" and self.is_own_client(
+                    staff_id, object_id
+                )
             elif table == "event" and department == "SUPPORT":
                 return self.is_their_event(staff_id, event_id=object_id)
-            elif (table == "event" or table == "contract" or table == "staff") and department == "MANAGEMENT":
+            elif (
+                table == "event" or table == "contract" or table == "staff"
+            ) and department == "MANAGEMENT":
                 return True
             elif (
                 table == "contract"

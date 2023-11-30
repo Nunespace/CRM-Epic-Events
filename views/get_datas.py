@@ -1,5 +1,6 @@
 import os
 import platform
+import getpass
 import re
 from passlib.hash import argon2
 from views.menu import Menu
@@ -58,7 +59,7 @@ class GetDatas:
         return hash
 
     def get_password(self):
-        password = input("Veuillez créer un mot de passe : ")
+        password = getpass.getpass("Veuillez créer un mot de passe : ")
         while (
             re.fullmatch(
                 r"^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$",
@@ -73,7 +74,7 @@ class GetDatas:
                 "au moins un chiffre, "
                 "au moins un caractère spécial."
             )
-            password = input("Mot de passe : ")
+            password = getpass.getpass("Mot de passe : ")
         password_hashed = self.hash_password(password)
         return password_hashed
 
@@ -95,7 +96,7 @@ class GetDatas:
             return datas
         elif table == "event":
             print("Veuillez taper les données suivantes.")
-            name = input("Nom de l'évènement : ")
+            name = input("Nom de l'évènement : ").capitalize()
             contract_id = input("numéro (id) du contrat : ")
             print("Indiquer la date et l'heure du début de l'évènement : ")
             event_date_start = self.get_datetime()
@@ -141,7 +142,7 @@ class GetDatas:
             password_hashed = self.get_password()
             department = self.get_department()
             datas = {
-                "name": name,
+                "name": name.capitalize(),
                 "first_name": first_name,
                 "email": email,
                 "password": password_hashed,
@@ -214,14 +215,8 @@ class GetDatas:
         support_contact = input(
             "Veuillez taper le nom ou l'id du collaborateur support de l'évènement : "
         )
-        return support_contact
+        return support_contact.capitalize()
 
-    def clean(self):
-        """Fonction qui efface l'affichage de la console"""
-        if platform.system() == "Windows":
-            os.system("cls")
-        elif platform.system() == "Linux":
-            os.system("clear")
 
     def get_department(self):
         print("Liste des départements : ")
@@ -232,3 +227,10 @@ class GetDatas:
         )
         department = Department(int(department_number))
         return department.name
+    
+    def clean(self):
+        """Fonction qui efface l'affichage de la console"""
+        if platform.system() == "Windows":
+            os.system("cls")
+        elif platform.system() == "Linux":
+            os.system("clear")

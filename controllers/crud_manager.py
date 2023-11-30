@@ -30,15 +30,20 @@ class CrudManager:
                 client_repository = repository.ClientRepository()
                 fullname = self.get_datas.get_fullname()
                 client = client_repository.find_by_fullname(fullname)
-                if client is not None and self.permissions.is_own_client(
-                    self.staff_user.id, client.id
-                ):
-                    event_repository = repository.EventRepository()
-                    try:
-                        event_repository.create_event(datas, client.id)
-                        return "creation_ok"
-                    except:
-                        return "unknown_client"
+                if client is not None:
+                    if self.permissions.is_own_client(
+                        self.staff_user.id, client.id
+                    ):
+                        event_repository = repository.EventRepository()
+                        try:
+                            event_repository.create_event(datas, client.id)
+                            return "creation_ok"
+                        except:
+                            return "error"
+                    else:
+                        return "not_allowed"
+                else:
+                    return "unknown_client"
 
             elif table == "contract":
                 contract_repository = repository.ContractRepository()
@@ -115,6 +120,8 @@ class CrudManager:
                     client = client_repository.find_by_fullname(
                         fullname_client
                     )
+                    if client is None:
+                        return False
                     event = event_repository.find_by_client(client.id)
                     if event is not None:
                         self.display.display_one_object(event)
@@ -135,6 +142,8 @@ class CrudManager:
                     client = client_repository.find_by_fullname(
                         fullname_client
                     )
+                    if client is None:
+                        return False
                     contract = contract_repository.find_by_client(client.id)
                     if contract is not None:
                         self.display.display_one_object(contract)
@@ -154,6 +163,8 @@ class CrudManager:
                     name_event = self.get_datas.get_name_event()
                     event_repository = repository.EventRepository()
                     event = event_repository.find_by_name(name_event)
+                    if event is None:
+                        return False
                     contract = contract_repository.find_by_event(event.id)
                     if contract is not None:
                         self.display.display_one_object(contract)
@@ -191,7 +202,7 @@ class CrudManager:
                 if option == 4:
                     email = self.get_datas.get_email()
                     staff_member = staff_repository.find_by_email(email)
-                    if staff_member is not None:
+                    if staff_member != []:
                         self.display.display_one_object(staff_member)
                         return True
                     return False
@@ -228,7 +239,6 @@ class CrudManager:
                 ):
                     print("rrrr")
                     if self.staff_user.department.name == "SUPPORT":
-
                         column_to_update = self.menu.choice_column_to_update(
                             table
                         )

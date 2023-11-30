@@ -17,10 +17,15 @@ class AuthenticationAndPermissions:
 
     def create_token(self, department):
         encoded_jwt = jwt.encode(
-            {"exp": datetime.now(tz=timezone.utc) + timedelta(seconds=60), "department": department}, SECRET, algorithm="HS256"
+            {
+                "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=3600),
+                "department": department,
+            },
+            SECRET,
+            algorithm="HS256",
         )
         return encoded_jwt
-    
+
     def staff_user(self, email):
         return SESSION.query(Staff).filter(Staff.email == email).one_or_none()
 

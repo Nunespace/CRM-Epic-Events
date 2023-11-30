@@ -18,7 +18,7 @@ def staff_user_commercial_and_token_fixture():
 @pytest.fixture
 def staff_user_management_and_token_fixture():
     staff_user = (
-        SESSION.query(Staff).filter(Staff.email == "jeanl@g.c").one_or_none()
+        SESSION.query(Staff).filter(Staff.email == "jean@g.c").one_or_none()
     )
     token = AuthenticationAndPermissions().create_token(
         department=staff_user.department.name
