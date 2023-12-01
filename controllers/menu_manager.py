@@ -71,6 +71,8 @@ class MenuManager:
                 return self.choice_main_menu()
 
         elif option == 4:
+            #from rich.prompt import Confirm
+            #if Confirm.ask("Continue"):
             pass
         else:
             self.messages.message_error(3)

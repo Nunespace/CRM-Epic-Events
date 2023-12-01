@@ -36,9 +36,10 @@ class TestMenu:
 class TestGetDatas:
 
     def test_get_credentials(self, mocker):
-        mocker.patch("builtins.input", return_value=("test"))
+        #mocker.patch("builtins.input", return_value=("test"))
+        mock_ask = mocker.patch("views.get_datas.Prompt.ask", side_effect=["me@example.com", "mon mot de passe"])
         get_datas_test = get_datas.GetDatas()
-        assert get_datas_test.get_credentials() == ("test", "test")
+        assert get_datas_test.get_credentials() == ("me@example.com", "mon mot de passe")
 
     def test_get_id_client(self, mocker):
         mocker.patch("builtins.input", return_value="2")
@@ -96,7 +97,7 @@ class TestGetDatas:
         assert get_datas_test.get_new_value("client_id") == 3
 
     def test_get_support_contact(self, mocker):
-        mocker.patch("builtins.input", return_value="dupont")
+        mocker.patch("rich.prompt", return_value="dupont")
         get_datas_test = get_datas.GetDatas()
         assert get_datas_test.get_support_contact() == "Dupont"
 

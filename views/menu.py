@@ -1,9 +1,14 @@
 import os
 import platform
 import time
+from rich.console import Console
 
 
 class Menu:
+
+    def __init__(self):
+        self.console = Console()
+
     def main_menu(self):
         """
         Affiche le menu principal
@@ -19,7 +24,7 @@ class Menu:
                 4: "collaborateurs: ",
                 5: "Fermer",
             }
-            print("****Menu principal****")
+            self.console.rule("[bold blue]Menu principal")
             print()
             for key in menu_options:
                 print(key, "--", menu_options[key])

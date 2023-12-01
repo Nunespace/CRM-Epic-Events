@@ -2,49 +2,56 @@ import os
 import platform
 import getpass
 import re
+from rich.console import Console
+from rich.prompt import Prompt, IntPrompt
+from rich import print
 from passlib.hash import argon2
 from views.menu import Menu
 from models.models import Department
+from rich.console import Console
 
+blue_console = Console(style="white on blue")
+red_console = Console(style="white on blue")
+# exemple : blue_console.print("I'm blue. Da ba dee da ba di.")
 
 class GetDatas:
     def __init__(self):
         self.menu = Menu()
+        self.console = Console()
 
     def get_credentials(self):
-        self.clean()
-        print("Veuillez taper vos identifiants.")
         print()
-        email = input("Email : ")
-        password = input("Mot de passe : ")
+        self.console.print("Veuillez taper vos identifiants.", style="blue")
+        email = Prompt.ask("🆔 Email")
+        password = Prompt.ask("🔑 Mot de passe", password=True)
         return email, password
 
     def get_id(self, table):
         if table == "client":
-            id_str = input("N° (id) du client :")
+            id_str = IntPrompt.ask("N° (id) du client :")
         elif table == "event":
-            id_str = input("N° (id) de l'évènement :")
+            id_str = IntPrompt.ask("N° (id) de l'évènement :")
         elif table == "contract":
-            id_str = input("N° (id) du contrat :")
+            id_str = IntPrompt.ask("N° (id) du contrat :")
         elif table == "staff":
-            id_str = input("N° (id) du collaborateur :")
-        id = self.chek_id(id_str)
+            id_str = IntPrompt.ask("N° (id) du collaborateur :")
+        #id = self.chek_id(id_str)
         return id
 
     def get_fullname(self):
-        print("Veuillez taper le nom complet du client.")
+        blue_console.print("Veuillez taper le nom complet du client.")
         name = input("Nom : ").capitalize()
         firstname = input("Prénom : ").capitalize()
         fullname = firstname + " " + name
         return fullname
 
     def get_name_event(self):
-        print("Veuillez taper le nom de l'évènement.")
+        blue_console.print("Veuillez taper le nom de l'évènement.")
         name_event = input("Nom : ").capitalize()
         return name_event
 
     def get_name_and_first_name_staff(self):
-        print("Veuillez taper le nom et le prénom du collaborateur.")
+        blue_console.print("Veuillez taper le nom et le prénom du collaborateur.")
         name = input("Nom : ").capitalize()
         firstname = input("Prénom : ").capitalize()
         return name, firstname
@@ -59,7 +66,7 @@ class GetDatas:
         return hash
 
     def get_password(self):
-        password = getpass.getpass("Veuillez créer un mot de passe : ")
+        password = getpass.getpass(prompt="Veuillez créer un mot de passe : ")
         while (
             re.fullmatch(
                 r"^(?=.{8,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$",
@@ -80,7 +87,7 @@ class GetDatas:
 
     def get_create_datas(self, table):
         if table == "client":
-            print("Veuillez taper les données suivantes.")
+            blue_console.print("Veuillez taper les données suivantes.")
             fullname = self.get_fullname()
             email_input = input("Email : ")
             email = self.chek_email(email_input)
@@ -95,12 +102,12 @@ class GetDatas:
             }
             return datas
         elif table == "event":
-            print("Veuillez taper les données suivantes.")
+            blue_console.print("Veuillez taper les données suivantes.")
             name = input("Nom de l'évènement : ").capitalize()
             contract_id = input("numéro (id) du contrat : ")
-            print("Indiquer la date et l'heure du début de l'évènement : ")
+            blue_console.print("Indiquer la date et l'heure du début de l'évènement : ")
             event_date_start = self.get_datetime()
-            print("Indiquer la date et l'heure de la fin de l'évènement : ")
+            blue_console.print("Indiquer la date et l'heure de la fin de l'évènement : ")
             event_date_end = self.get_datetime()
             location = input("lieu : ")
             attendees = input("Nombre de personnes estimé : ")
@@ -117,7 +124,7 @@ class GetDatas:
             return datas
 
         elif table == "contract":
-            print("Veuillez taper les données suivantes.")
+            blue_console.print("Veuillez taper les données suivantes.")
             client_id = input("N° (id) du client : ")
             total_amount = input("Montant total : ")
             total_amount = self.chek_number(total_amount)
@@ -136,7 +143,7 @@ class GetDatas:
             return datas
 
         elif table == "staff":
-            print("Veuillez taper les données suivantes.")
+            blue_console.print("Veuillez taper les données suivantes.")
             name, first_name = self.get_name_and_first_name_staff()
             email = self.get_email()
             password_hashed = self.get_password()
@@ -163,19 +170,21 @@ class GetDatas:
             re.fullmatch(r"[a-z0-9._-]+@[a-z0-9._-]+\.[a-z0-9._-]+", email)
             is None
         ):
-            print("Veuillez taper un email valide. Exemple : alice@gmail.com")
+            red_console.print("Veuillez taper un email valide. Exemple : alice@gmail.com")
             email = input("Email : ")
         return email
 
+    """
     def chek_id(self, id):
         while re.fullmatch(r"[0-9]", id) is None:
             print("Veuillez taper un nombre entre 0 et 9")
             id = input("id : ")
         return int(id)
+    """
 
     def chek_phone(self, phone):
         while re.fullmatch(r"[0-9]+", phone) is None:
-            print(
+            red_console.print(
                 "Le n° de téléphone doit être composé uniquement de chiffres, sans espaces."
             )
             phone = input("N° de téléphone : ")
@@ -183,7 +192,7 @@ class GetDatas:
 
     def chek_number(self, number_input):
         while re.fullmatch(r"[0-9]+", number_input) is None:
-            print(
+            red_console.printrint(
                 "Le montant doit être composé uniquement de chiffres, sans espaces."
             )
             number_input = input("Montant : ")

@@ -15,6 +15,7 @@ passlib = "*"
 coverage = "*"
 pytest-cov = "*"
 click = "*"
+rich = "*"
 
 [dev-packages]
 
