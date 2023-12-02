@@ -2,10 +2,11 @@ import os
 import platform
 import time
 from rich.console import Console
+from rich.prompt import Prompt, IntPrompt
 
+blue_console = Console(style="white on blue")
 
 class Menu:
-
     def __init__(self):
         self.console = Console()
 
@@ -14,37 +15,35 @@ class Menu:
         Affiche le menu principal
         retourne le choix de l'utilisateur
         """
-
         print()
-        while True:
-            menu_options = {
-                1: "Clients",
-                2: "Evènements",
-                3: "Contrats",
-                4: "collaborateurs: ",
-                5: "Fermer",
-            }
-            self.console.rule("[bold blue]Menu principal")
+        menu_options = {
+            1: "Clients",
+            2: "Evènements",
+            3: "Contrats",
+            4: "Collaborateurs: ",
+            5: "Fermer",
+        }
+        self.console.rule("[bold blue]Menu principal")
+        print()
+        for key in menu_options:
+            self.console.print(key, "--", menu_options[key], style="blue")
             print()
-            for key in menu_options:
-                print(key, "--", menu_options[key])
-                print()
-            try:
-                option = int(input("Entrer votre choix : "))
-            except ValueError:
-                print("Vous devez taper un nombre entre 1 et 5.")
-                time.sleep(2)
-                self.clean()
-                print()
-            else:
-                if option < 1 or option > 5:
-                    print("Vous devez taper un nombre entre 1 et 5.")
-                    time.sleep(2)
-                    self.clean()
-                    print()
-                else:
-                    self.clean()
-                    return option
+
+        option = IntPrompt.ask(
+            "Entrer votre choix : ", choices=["1", "2", "3", "4", "5"]
+        )
+        self.clean()
+        return option
+    
+    def table_name_translation(self, table):
+        if table == "client":
+            return "Clients"
+        elif table == "contract":
+            return "Contrats"
+        elif table == "event":
+            return "Evènements"
+        elif table == "staff":
+            return "Collaborateurs"
 
     def submenu(self, table):
         """
@@ -52,52 +51,37 @@ class Menu:
         collaborateur)
         retourne le choix de l'utilisateur
         """
-        while True:
-            print()
-            print(f"*****Menu {table}*****")
-            print()
-            if table != "staff":
-                menu_options = {
-                    1: "Consulter",
-                    2: "Créer",
-                    3: "Modifier",
-                    4: "Retour au menu principal",
-                    5: "Fermer",
-                }
-            elif table == "staff":
-                menu_options = {
-                    1: "Consulter",
-                    2: "Créer",
-                    3: "Modifier",
-                    4: "Supprimer un compte collaborateur",
-                    5: "Retour au menu principal",
-                    6: "Fermer",
-                }
+        table_in_french = self.table_name_translation(table)
+        print()
+        self.console.rule(f"[bold blue]Menu {table_in_french}")
+        print()
+        if table != "staff":
+            menu_options = {
+                1: "Consulter",
+                2: "Créer",
+                3: "Modifier",
+                4: "Retour au menu principal",
+                5: "Fermer",
+            }
+        elif table == "staff":
+            menu_options = {
+                1: "Consulter",
+                2: "Créer",
+                3: "Modifier",
+                4: "Supprimer un compte collaborateur",
+                5: "Retour au menu principal",
+                6: "Fermer",
+            }
 
-            for key in menu_options:
-                print(key, "--", menu_options[key])
-                print()
-            try:
-                option = int(input("Entrer votre choix : "))
-            except ValueError:
-                print(
-                    f"Vous devez taper un nombre entre 1 et {len(menu_options)}"
-                )
-                time.sleep(2)
-                self.clean()
-                print()
-            else:
-                if option < 1 or option > len(menu_options):
-                    print(
-                        "Vous devez taper un nombre entre 1 et "
-                        f"{len(menu_options)}."
-                    )
-                    time.sleep(2)
-                    self.clean()
-                    print()
-                else:
-                    self.clean()
-                    return option
+        for key in menu_options:
+            self.console.print(key, "--", menu_options[key], style="blue")
+            print()
+
+        option = IntPrompt.ask(
+            "Entrer votre choix : ", choices=["1", "2", "3", "4", "5"]
+        )
+        self.clean()
+        return option
 
     def view_menu_read_only(self, table):
         """
@@ -106,7 +90,7 @@ class Menu:
         """
         while True:
             print()
-            print(f"*****Consulter*****")
+            self.console.rule("[bold blue]Consulter")
             print()
             if table == "client":
                 menu_options = {
@@ -144,31 +128,26 @@ class Menu:
                     6: "Fermer",
                 }
             for key in menu_options:
-                print(key, "--", menu_options[key])
+                self.console.print(key, "--", menu_options[key], style="blue")
                 print()
-            try:
-                option = int(input("Entrer votre choix : "))
-            except ValueError:
-                print("Vous devez taper un nombre.")
-                time.sleep(2)
-                self.clean()
-                print()
+
+            if table == "client":
+                option = IntPrompt.ask(
+                    "Entrer votre choix : ", choices=["1", "2", "3", "4", "5"]
+                )
             else:
-                if option < 1 or option > len(menu_options):
-                    print("Vous devez taper un nombre correspondant au menu.")
-                    time.sleep(2)
-                    self.clean()
-                    print()
-                else:
-                    self.clean()
-                    return option
+                option = IntPrompt.ask(
+                    "Entrer votre choix : ", choices=["1", "2", "3", "4", "5", "6"]
+                )
+
+            self.clean()
+            return option
 
     def choice_column_to_update(self, table):
         while True:
             print()
             if table == "client":
-                print("*****Modifier un compte client*****")
-                print("Liste des champs modifiables : ")
+                self.console.rule("[bold blue]Modifier un compte client")
                 list_of_editable_update_columns = {
                     1: "fullname",
                     2: "email",
@@ -177,9 +156,9 @@ class Menu:
                     5: "Retour au menu principal",
                     6: "Fermer",
                 }
+
             elif table == "event":
-                print("*****Modifier un évènement*****")
-                print("Liste des champs modifiables : ")
+                self.console.rule("[bold blue]Modifier un èvènement")
                 list_of_editable_update_columns = {
                     1: "name",
                     2: "contract_id",
@@ -193,56 +172,59 @@ class Menu:
                     10: "Retour au menu principal",
                     11: "Fermer",
                 }
+
             elif table == "contract":
-                print("*****Modifier un contrat*****")
-                print("Liste des champs modifiables : ")
+                self.console.rule("[bold blue]Modifier un contrat")
                 list_of_editable_update_columns = {
                     1: "client_id",
                     2: "total_amount",
                     3: "balance_due",
                     4: "status",
+                    5: "Retour au menu principal",
+                    6: "Fermer",
                 }
 
             elif table == "staff":
-                print("*****Modifier un collaborateur*****")
-                print("Liste des champs modifiables : ")
+                self.console.rule("[bold blue]Modifier un collaborateur")
                 list_of_editable_update_columns = {
                     1: "name",
                     2: "first_name",
                     3: "email",
                     4: "password",
+                    5: "Retour au menu principal",
+                    6: "Fermer",
                 }
-
+            blue_console.print("Liste des champs modifiables : ")
             for key in list_of_editable_update_columns:
-                print(key, "--", list_of_editable_update_columns[key])
-                print()
-            try:
-                number_column_to_update = int(input("Entrer votre choix : "))
-
-            except ValueError:
-                print(
-                    f"Vous devez taper un nombre entre 1 et {len(list_of_editable_update_columns)}."
+                self.console.print(
+                    key, list_of_editable_update_columns[key], style="blue"
                 )
-                time.sleep(2)
-                self.clean()
                 print()
+            if table == "event":
+                number_column_to_update = IntPrompt.ask(
+                    "Entrer votre choix : ",
+                    choices=[
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "11",
+                    ],
+                )
             else:
-                if (
-                    number_column_to_update < 1
-                    or number_column_to_update
-                    > len(list_of_editable_update_columns)
-                ):
-                    print(
-                        f"Vous devez taper un nombre entre 1 et {len(list_of_editable_update_columns)}."
-                    )
-                    time.sleep(2)
-                    self.clean()
-                    print()
-                else:
-                    self.clean()
-                    return list_of_editable_update_columns[
-                        number_column_to_update
-                    ]
+                number_column_to_update = IntPrompt.ask(
+                    "Entrer votre choix : ",
+                    choices=["1", "2", "3", "4", "5", "6"],
+                )
+
+            self.clean()
+            return list_of_editable_update_columns[number_column_to_update]
 
     def clean(self):
         """Fonction qui efface l'affichage de la console"""

@@ -73,14 +73,14 @@ class CrudManager:
 
                 if option == 1:
                     client = client_repository.get_all()
-                    self.display.display_all_table(client)
+                    self.display.display_table(client, table, all=True)
                     return True
 
                 if option == 2:
                     fullname = self.get_datas.get_fullname()
                     client = client_repository.find_by_fullname(fullname)
                     if client is not None:
-                        self.display.display_one_object(client)
+                        self.display.display_table(client, table)
                         return True
                     return False
 
@@ -88,7 +88,7 @@ class CrudManager:
                     id = self.get_datas.get_id(table)
                     client = client_repository.find_by_id(id)
                     if client is not None:
-                        self.display.display_one_object(client)
+                        self.display.display_table(client, table)
                         return True
                     return False
 
@@ -96,21 +96,21 @@ class CrudManager:
                 event_repository = repository.EventRepository()
                 if option == 1:
                     event = event_repository.get_all()
-                    self.display.display_all_table(event)
+                    self.display.display_table(event, table, all=True)
                     return True
 
                 elif option == 2:
                     name_event = self.get_datas.get_name_event()
                     event = event_repository.find_by_name(name_event)
                     if event is not None:
-                        self.display.display_one_object(event)
+                        self.display.display_table(event, table)
                         return True
                     return False
                 elif option == 3:
                     id = self.get_datas.get_id(table)
                     event = event_repository.find_by_id(id)
                     if event is not None:
-                        self.display.display_one_object(event)
+                        self.display.display_table(event, table)
                         return True
                     return False
 
@@ -124,7 +124,7 @@ class CrudManager:
                         return False
                     event = event_repository.find_by_client(client.id)
                     if event is not None:
-                        self.display.display_one_object(event)
+                        self.display.display_table(event, table)
                         return True
                     return False
 
@@ -132,7 +132,7 @@ class CrudManager:
                 contract_repository = repository.ContractRepository()
                 if option == 1:
                     contract = contract_repository.get_all()
-                    self.display.display_all_table(contract)
+                    self.display.display_table(contract, table, all=True)
                     return True
 
                 elif option == 2:
@@ -146,7 +146,7 @@ class CrudManager:
                         return False
                     contract = contract_repository.find_by_client(client.id)
                     if contract is not None:
-                        self.display.display_one_object(contract)
+                        self.display.display_table(contract, table)
                         return True
                     return False
 
@@ -154,7 +154,7 @@ class CrudManager:
                     id = self.get_datas.get_id(table)
                     contract = contract_repository.find_by_id(id)
                     if contract is not None:
-                        self.display.display_one_object(contract)
+                        self.display.display_table(contract, table)
                         return True
                     return False
 
@@ -162,12 +162,12 @@ class CrudManager:
                     # Recherche d'un contrat avec le nom d'un évènement
                     name_event = self.get_datas.get_name_event()
                     event_repository = repository.EventRepository()
-                    event = event_repository.find_by_name(name_event)
+                    event = event_repository.find_by_name(name_event, table)
                     if event is None:
                         return False
                     contract = contract_repository.find_by_event(event.id)
                     if contract is not None:
-                        self.display.display_one_object(contract)
+                        self.display.display_table(contract, table)
                         return True
                     return False
 
@@ -175,14 +175,14 @@ class CrudManager:
                 staff_repository = repository.StaffRepository()
                 if option == 1:
                     staff = staff_repository.get_all()
-                    self.display.display_all_table(staff)
+                    self.display.display_table(staff, table, all=True)
                     return True
 
                 if option == 2:
                     id = self.get_datas.get_id(table)
                     staff_member = staff_repository.find_by_id(id)
                     if staff_member is not None:
-                        self.display.display_one_object(staff_member)
+                        self.display.display_table(staff_member, table)
                         return True
                     return False
 
@@ -195,7 +195,7 @@ class CrudManager:
                         name, first_name
                     )
                     if staff_member is not None:
-                        self.display.display_one_object(staff_member)
+                        self.display.display_table(staff_member, table)
                         return True
                     return False
 
@@ -203,7 +203,7 @@ class CrudManager:
                     email = self.get_datas.get_email()
                     staff_member = staff_repository.find_by_email(email)
                     if staff_member != []:
-                        self.display.display_one_object(staff_member)
+                        self.display.display_table(staff_member, table)
                         return True
                     return False
 

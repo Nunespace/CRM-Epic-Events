@@ -28,13 +28,13 @@ class GetDatas:
 
     def get_id(self, table):
         if table == "client":
-            id_str = IntPrompt.ask("N° (id) du client :")
+            id = IntPrompt.ask("N° (id) du client :")
         elif table == "event":
-            id_str = IntPrompt.ask("N° (id) de l'évènement :")
+            id = IntPrompt.ask("N° (id) de l'évènement :")
         elif table == "contract":
-            id_str = IntPrompt.ask("N° (id) du contrat :")
+            id = IntPrompt.ask("N° (id) du contrat :")
         elif table == "staff":
-            id_str = IntPrompt.ask("N° (id) du collaborateur :")
+            id = IntPrompt.ask("N° (id) du collaborateur :")
         #id = self.chek_id(id_str)
         return id
 
