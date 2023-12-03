@@ -29,7 +29,9 @@ class Messages:
                 "'pipenv run python main.py'"
             )
         elif message_number == 3:
-            print("Une erreur s'est produite. Veuillez recommencer.")
+            print(
+                "Une erreur s'est produite : id ou nom inconnu. Veuillez recommencer."
+            )
 
         elif message_number == 4:
             if table == "client":

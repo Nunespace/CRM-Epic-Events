@@ -34,6 +34,10 @@ class Display:
             table_display = self.table_client(result, all)
         if table == "contract":
             table_display = self.table_contract(result, all)
+        if table == "event":
+            table_display = self.table_event(result, all)
+        if table == "staff":
+            table_display = self.table_staff(result, all)
         print()
         self.console.print(table_display)
         print()
@@ -124,6 +128,92 @@ class Display:
                 f"{result.status}",
             )
 
+            return table_display
+
+    def table_event(self, result, all):
+        table_display = Table(
+            title="Evènements", show_lines=True, box=box.MINIMAL_DOUBLE_HEAD
+        )
+        table_display.add_column("Id", style="cyan", no_wrap=True)
+        table_display.add_column(
+            "Nom de l'évènement", style="cyan", no_wrap=True
+        )
+        table_display.add_column("Contrat (id)", style="magenta", no_wrap=True)
+        table_display.add_column("Client (id)", style="magenta", no_wrap=True)
+        table_display.add_column("Contact support (id)", style="green")
+        table_display.add_column("Début", style="magenta", no_wrap=True)
+        table_display.add_column("Fin", style="green", no_wrap=True)
+        table_display.add_column("Lieu", style="green", no_wrap=True)
+        table_display.add_column(
+            "Nombre de personnes", style="cyan", no_wrap=True
+        )
+        table_display.add_column("Notes", style="magenta")
+        
+        if all:
+            for row in result:
+                table_display.add_row(
+                    f"{row.id}",
+                    f"{row.name}",
+                    f"{row.contract_id}",
+                    f"{row.client_id}",
+                    f"{row.support_contact_id}",
+                    f"{row.event_date_start}",
+                    f"{row.event_date_end}",
+                    f"{row.location}",
+                    f"{row.attendees}",
+                    f"{row.notes}",
+                )
+
+            return table_display
+        else:
+            table_display.add_row(
+                f"{result.id}",
+                f"{result.name}",
+                f"{result.contract_id}",
+                f"{result.client_id}",
+                f"{result.support_contact_id}",
+                f"{result.event_date_start}",
+                f"{result.event_date_end}",
+                f"{result.location}",
+                f"{result.attendees}",
+                f"{result.notes}",
+            )
+            return table_display
+
+    def table_staff(self, result, all):
+        table_display = Table(
+            title="Collaborateurs",
+            show_lines=True,
+            box=box.MINIMAL_DOUBLE_HEAD,
+        )
+        table_display.add_column("Id", style="cyan", no_wrap=True)
+        table_display.add_column("Nom", style="magenta", no_wrap=True)
+        table_display.add_column("Prénom", style="magenta", no_wrap=True)
+        table_display.add_column("Email", style="green")
+        table_display.add_column("Mot de passe", justify="right", style="cyan")
+        table_display.add_column("Département", style="magenta")
+
+        if all:
+            for row in result:
+                table_display.add_row(
+                    f"{row.id}",
+                    f"{row.name}",
+                    f"{row.first_name}",
+                    f"{row.email}",
+                    f"{row.password}",
+                    f"{row.department.name}",
+                )
+
+            return table_display
+        else:
+            table_display.add_row(
+                f"{result.id}",
+                f"{result.name}",
+                f"{result.first_name}",
+                f"{result.email}",
+                f"{result.password}",
+                f"{result.department.name}",
+            )
             return table_display
 
     def clean(self):
