@@ -1,19 +1,30 @@
 import jwt
+import time
 from settings import SECRET, SESSION
 from views.messages import Messages
+from views.menu import Menu
 from models.models import Staff
 
 
 class Permissions:
     def __init__(self):
         self.messages = Messages()
+        self.menu = Menu()
 
     def check_token_validity(self, token):
+        """
+        Vérifie si le token est toujours valide. Si la durée est expirée,
+        l'application se ferme.
+        """
         try:
             return jwt.decode(token, SECRET, algorithms="HS256")
         except jwt.ExpiredSignatureError:
+            self.menu.clean()
             self.messages.message_error(table=None, message_number=2)
-            return False
+            print()
+            time.sleep(3)
+            SESSION.close()
+            exit()
 
     def permission_create(self, token, table):
         if self.check_token_validity(token) is not False:
@@ -28,11 +39,8 @@ class Permissions:
             elif (
                 table == "contract" or table == "staff"
             ) and department == "MANAGEMENT":
-                print("table :", table, "department :", department)
                 return True
             else:
-                print("table :", table, "department :", department)
-                print("1111111")
                 return False
         else:
             return False

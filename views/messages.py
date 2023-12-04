@@ -10,7 +10,7 @@ class Messages:
             elif table == "staff":
                 print("Le collaborateur a bien été enregistré.")
 
-        if message_number == 2:
+        elif message_number == 2:
             if table == "client":
                 print("Le client a bien été modifié.")
             elif table == "event":
@@ -20,12 +20,15 @@ class Messages:
             elif table == "staff":
                 print("Le collaborateur a bien été modifié.")
 
+        elif message_number == 3 and table == "staff":
+            print("Le collaborateur a bien été supprimé de la base de données.")
+
     def message_error(self, table, message_number):
         if message_number == 1:
             print("Email ou mot de passe invalide")
         elif message_number == 2:
             print(
-                "Veuillez fermer l'application et vous authentifier de nouveau avec la commande : "
+                "Votre session a expiré. L'application va se fermer. Veuillez vous authentifier de nouveau avec la commande : "
                 "'pipenv run python main.py'"
             )
         elif message_number == 3:

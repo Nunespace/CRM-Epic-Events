@@ -14,9 +14,7 @@ class ClientRepository:
         return SESSION.query(Client).filter_by(email=email).all()
 
     def get_all(self):
-        with ENGINE.connect() as conn:
-            result = conn.execute(text("SELECT * FROM client"))
-        return result
+        return SESSION.query(Client).all()
 
     def create_client(self, datas, staff_id):
         client = Client(
@@ -55,6 +53,9 @@ class EventRepository:
 
     def get_all(self):
         return SESSION.query(Event).all()
+    
+    def get_all_with_support_contact_none(self):
+        return SESSION.query(Event).filter_by(support_contact_id=None)
 
     def create_event(self, datas, client_id):
         event = Event(

@@ -39,7 +39,11 @@ class Display:
         if table == "staff":
             table_display = self.table_staff(result, all)
         print()
-        self.console.print(table_display)
+        if table_display.rows:
+            self.console.print(table_display)
+        else:
+            self.console.print("[i]Pas de résultat...[/i]", style="indian_red1")
+        
         print()
         time.sleep(4)
 
@@ -50,11 +54,7 @@ class Display:
         table_display.add_column("Id", style="cyan", no_wrap=True)
         table_display.add_column("Nom complet", style="magenta", no_wrap=True)
         table_display.add_column("Email", style="green")
-        table_display.add_column(
-            "Téléphone",
-            justify="right",
-            style="cyan",
-        )
+        table_display.add_column("Téléphone", style="cyan")
         table_display.add_column("Entreprise", style="magenta")
         table_display.add_column("Création", style="green")
         table_display.add_column("Mise à jour", style="green")
@@ -71,7 +71,7 @@ class Display:
                     f"{row.name_company}",
                     f"{row.date_creation}",
                     f"{row.date_update}",
-                    f"{row.commercial_contact_id}",
+                    f"{row.commercial_contact.first_name} {row.commercial_contact.name}",
                 )
 
             return table_display
@@ -84,7 +84,7 @@ class Display:
                 f"{result.name_company}",
                 f"{result.date_creation}",
                 f"{result.date_update}",
-                f"{result.commercial_contact_id}",
+                f"{result.commercial_contact.first_name} {result.commercial_contact.name}",
             )
             return table_display
 
@@ -93,13 +93,9 @@ class Display:
             title="Contrats", show_lines=True, box=box.MINIMAL_DOUBLE_HEAD
         )
         table_display.add_column("Id", style="cyan", no_wrap=True)
-        table_display.add_column("Client (id)", style="magenta", no_wrap=True)
-        table_display.add_column("Contact commercial (id)", style="green")
-        table_display.add_column(
-            "Total dû",
-            justify="right",
-            style="cyan",
-        )
+        table_display.add_column("Client", style="magenta", no_wrap=True)
+        table_display.add_column("Contact commercial", style="green")
+        table_display.add_column("Total dû", style="cyan")
         table_display.add_column("Reste à payer", style="magenta")
         table_display.add_column("Création", style="green")
         table_display.add_column("Statut (signature)", style="green")
@@ -108,8 +104,8 @@ class Display:
             for row in result:
                 table_display.add_row(
                     f"{row.id}",
-                    f"{row.client_id}",
-                    f"{row.commercial_contact_id}",
+                    f"{row.client.fullname}",
+                    f"{row.commercial_contact.first_name} {row.commercial_contact.name}",
                     f"{row.total_amount}",
                     f"{row.balance_due}",
                     f"{row.date_creation}",
@@ -120,8 +116,8 @@ class Display:
         else:
             table_display.add_row(
                 f"{result.id}",
-                f"{result.client_id}",
-                f"{result.commercial_contact_id}",
+                f"{result.client_fullname}",
+                f"{result.commercial_contact.first_name} {result.commercial_contact.name}",
                 f"{result.total_amount}",
                 f"{result.balance_due}",
                 f"{result.date_creation}",
@@ -132,31 +128,36 @@ class Display:
 
     def table_event(self, result, all):
         table_display = Table(
-            title="Evènements", show_lines=True, box=box.MINIMAL_DOUBLE_HEAD
+            title="Evènements",
+            show_lines=True,
+            box=box.MINIMAL_DOUBLE_HEAD,
+            expand=True,
         )
-        table_display.add_column("Id", style="cyan", no_wrap=True)
+        table_display.add_column("Id", style="cyan")
+        table_display.add_column("Nom de l'évènement", style="cyan")
+        table_display.add_column("Contrat (id)", style="magenta")
         table_display.add_column(
-            "Nom de l'évènement", style="cyan", no_wrap=True
+            "Client", style="cyan", width=18
         )
-        table_display.add_column("Contrat (id)", style="magenta", no_wrap=True)
-        table_display.add_column("Client (id)", style="magenta", no_wrap=True)
-        table_display.add_column("Contact support (id)", style="green")
-        table_display.add_column("Début", style="magenta", no_wrap=True)
-        table_display.add_column("Fin", style="green", no_wrap=True)
-        table_display.add_column("Lieu", style="green", no_wrap=True)
-        table_display.add_column(
-            "Nombre de personnes", style="cyan", no_wrap=True
-        )
-        table_display.add_column("Notes", style="magenta")
-        
+        table_display.add_column("Contact support", style="green")
+        table_display.add_column("Début", style="magenta", width=10)
+        table_display.add_column("Fin", style="magenta", width=10)
+        table_display.add_column("Lieu", style="green")
+        table_display.add_column("Nombre de personnes", style="cyan")
+        table_display.add_column("Notes", style="magenta", no_wrap=True)
+
         if all:
             for row in result:
+                if row.support_contact_id is not None:
+                    support_contact = f"{row.support_contact.first_name} {row.support_contact.name}"
+                else:
+                    support_contact = None
                 table_display.add_row(
                     f"{row.id}",
                     f"{row.name}",
                     f"{row.contract_id}",
-                    f"{row.client_id}",
-                    f"{row.support_contact_id}",
+                    f"{row.client.fullname} {row.client.email} tel:{row.client.phone}",
+                    support_contact,
                     f"{row.event_date_start}",
                     f"{row.event_date_end}",
                     f"{row.location}",
@@ -166,12 +167,16 @@ class Display:
 
             return table_display
         else:
+            if result.support_contact_id is not None:
+                support_contact = f"{row.support_contact.first_name} {row.support_contact.name}"
+            else:
+                support_contact = None
             table_display.add_row(
                 f"{result.id}",
                 f"{result.name}",
                 f"{result.contract_id}",
-                f"{result.client_id}",
-                f"{result.support_contact_id}",
+                f"{result.client.fullname} {result.client.email} tel:{result.client.phone}",
+                support_contact,
                 f"{result.event_date_start}",
                 f"{result.event_date_end}",
                 f"{result.location}",
@@ -185,13 +190,14 @@ class Display:
             title="Collaborateurs",
             show_lines=True,
             box=box.MINIMAL_DOUBLE_HEAD,
+            expand=True,
         )
         table_display.add_column("Id", style="cyan", no_wrap=True)
         table_display.add_column("Nom", style="magenta", no_wrap=True)
         table_display.add_column("Prénom", style="magenta", no_wrap=True)
-        table_display.add_column("Email", style="green")
-        table_display.add_column("Mot de passe", justify="right", style="cyan")
-        table_display.add_column("Département", style="magenta")
+        table_display.add_column("Email", style="green", no_wrap=True)
+        table_display.add_column("Mot de passe", style="cyan", width=8)
+        table_display.add_column("Département", style="magenta", no_wrap=True)
 
         if all:
             for row in result:

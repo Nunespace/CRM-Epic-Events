@@ -42,8 +42,16 @@ class MenuManager:
         # car tous les collaborateurs authentifiés sont autorisées à lire les données
 
         if option == 1:
-            if self.crud.read(table):
-                return self.choice_main_menu()
+            return_of_order = self.crud.read(table)
+            if (
+                return_of_order == "display_ok"
+                or return_of_order == "back"
+            ):
+                return self.choice_submenu(table)
+            elif return_of_order == "close":
+                SESSION.close()
+                exit()
+
             else:
                 self.messages.message_error(table, 3)
                 return self.choice_main_menu()
@@ -70,10 +78,31 @@ class MenuManager:
                 self.messages.message_error(table, 5)
                 return self.choice_main_menu()
 
-        elif option == 4:
-            #from rich.prompt import Confirm
-            #if Confirm.ask("Continue"):
-            pass
-        else:
-            self.messages.message_error(3)
+        elif option == 4 and table != "staff":
             return self.choice_main_menu()
+
+        elif option == 4 and table == "staff":
+            return_of_order = self.crud.delete(table)
+            if return_of_order == "delete_ok":
+                self.messages_ok(table, 3)
+                return self.choice_main_menu()
+            elif return_of_order == "canceled":
+                return self.choice_main_menu()
+
+            elif return_of_order == "not_allowed":
+                self.messages.message_error(table, 5)
+                return self.choice_main_menu()
+            else:
+                self.messages.message_error(table, 3)
+                return self.choice_main_menu()
+
+        elif option == 5 and table != "staff":
+            SESSION.close()
+            exit()
+
+        elif option == 5 and table == "staff":
+            return self.choice_main_menu()
+
+        elif option == 6 and table == "staff":
+            SESSION.close()
+            exit()

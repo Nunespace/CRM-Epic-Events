@@ -48,8 +48,6 @@ class Client(Base):
     events: Mapped[List["Event"]] = relationship(back_populates="client")
 
     def __repr__(self) -> str:
-        # return f"Client(id={self.id!r}, fullname={self.fullname!r})"
-
         return (
             f"Client(id:{self.id}, fullname : {self.fullname}, email : {self.email}, phone : {self.phone},"
             f"name_company : {self.name_company!r}, date_creation : {self.date_creation!r},"
@@ -74,7 +72,7 @@ class Event(Base):
     event_date_start: Mapped[datetime]
     event_date_end: Mapped[datetime]
 
-    support_contact_id = mapped_column(ForeignKey("staff.id"), nullable=True)
+    support_contact_id = mapped_column(ForeignKey("staff.id"), nullable=True, default=None)
     support_contact = relationship("Staff", back_populates="events")
 
     location: Mapped[str] = mapped_column(String(250))
@@ -84,11 +82,6 @@ class Event(Base):
     def __repr__(self) -> str:
         return f"Event(id={self.id!r}, name={self.name!r}, location={self.location!r})"
 
-
-"""
-rappel : client_name, client_contact_email, client_contact_phone : FK
-
-"""
 
 
 class Contract(Base):

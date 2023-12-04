@@ -1,3 +1,4 @@
+from rich.prompt import Confirm
 from models import repository
 from controllers.permissions import Permissions
 from views.menu import Menu
@@ -59,60 +60,67 @@ class CrudManager:
                     staff_repository.create_staff(datas)
                     return "creation_ok"
                 except:
-                    print("DATASSSSS: ", datas)
-                    print("Except : Erreur ds crudmanager")
                     return "error"
-        print("icccccciiii")
         return "not_allowed"
 
     def read(self, table):
         option = self.menu.view_menu_read_only(table)
         if self.permissions.check_token_validity(self.token):
-            if table == "client":
+            if option == 5:
+                return "back"
+
+            elif option == 6:
+
+                return "close"
+         
+            elif table == "client":
                 client_repository = repository.ClientRepository()
 
                 if option == 1:
                     client = client_repository.get_all()
                     self.display.display_table(client, table, all=True)
-                    return True
+                    return "display_ok"
 
-                if option == 2:
+                elif option == 2:
                     fullname = self.get_datas.get_fullname()
                     client = client_repository.find_by_fullname(fullname)
                     if client is not None:
                         self.display.display_table(client, table)
-                        return True
-                    return False
+                        return "display_ok"
 
-                if option == 3:
+                elif option == 3:
                     id = self.get_datas.get_id(table)
                     client = client_repository.find_by_id(id)
                     if client is not None:
                         self.display.display_table(client, table)
-                        return True
-                    return False
+                        return "display_ok"
+
+                elif option == 4:
+                    client_email = self.get_datas.get_email(table)
+                    client = client_repository.find_by_email(client_email)
+                    if client is not None:
+                        self.display.display_table(client, table)
+                        return "display_ok"
 
             elif table == "event":
                 event_repository = repository.EventRepository()
                 if option == 1:
                     event = event_repository.get_all()
                     self.display.display_table(event, table, all=True)
-                    return True
+                    return "display_ok"
 
                 elif option == 2:
-                    name_event = self.get_datas.get_name_event()
-                    event = event_repository.find_by_name(name_event)
+                    event = event_repository.get_all_with_support_contact_none()
                     if event is not None:
-                        self.display.display_table(event, table)
-                        return True
-                    return False
+                        self.display.display_table(event, table, all=True)
+                        return "display_ok"
+
                 elif option == 3:
                     id = self.get_datas.get_id(table)
                     event = event_repository.find_by_id(id)
                     if event is not None:
                         self.display.display_table(event, table)
-                        return True
-                    return False
+                        return "display_ok"
 
                 elif option == 4:
                     fullname_client = self.get_datas.get_fullname()
@@ -120,20 +128,18 @@ class CrudManager:
                     client = client_repository.find_by_fullname(
                         fullname_client
                     )
-                    if client is None:
-                        return False
-                    event = event_repository.find_by_client(client.id)
-                    if event is not None:
-                        self.display.display_table(event, table)
-                        return True
-                    return False
+                    if client is not None:
+                        event = event_repository.find_by_client(client.id)
+                        if event is not None:
+                            self.display.display_table(event, table)
+                            return "display_ok"
 
             elif table == "contract":
                 contract_repository = repository.ContractRepository()
                 if option == 1:
                     contract = contract_repository.get_all()
                     self.display.display_table(contract, table, all=True)
-                    return True
+                    return "display_ok"
 
                 elif option == 2:
                     # Recherche d'un contrat avec le nom du client concerné
@@ -142,49 +148,45 @@ class CrudManager:
                     client = client_repository.find_by_fullname(
                         fullname_client
                     )
-                    if client is None:
-                        return False
-                    contract = contract_repository.find_by_client(client.id)
-                    if contract is not None:
-                        self.display.display_table(contract, table)
-                        return True
-                    return False
+                    if client is not None:
+                        contract = contract_repository.find_by_client(
+                            client.id
+                        )
+                        if contract is not None:
+                            self.display.display_table(contract, table)
+                            return "display_ok"
 
                 elif option == 3:
                     id = self.get_datas.get_id(table)
                     contract = contract_repository.find_by_id(id)
                     if contract is not None:
                         self.display.display_table(contract, table)
-                        return True
-                    return False
+                        return "display_ok"
 
                 elif option == 4:
                     # Recherche d'un contrat avec le nom d'un évènement
                     name_event = self.get_datas.get_name_event()
                     event_repository = repository.EventRepository()
                     event = event_repository.find_by_name(name_event, table)
-                    if event is None:
-                        return False
-                    contract = contract_repository.find_by_event(event.id)
-                    if contract is not None:
-                        self.display.display_table(contract, table)
-                        return True
-                    return False
+                    if event is not None:
+                        contract = contract_repository.find_by_event(event.id)
+                        if contract is not None:
+                            self.display.display_table(contract, table)
+                            return "display_ok"
 
             elif table == "staff":
                 staff_repository = repository.StaffRepository()
                 if option == 1:
                     staff = staff_repository.get_all()
                     self.display.display_table(staff, table, all=True)
-                    return True
+                    return "display_ok"
 
                 if option == 2:
                     id = self.get_datas.get_id(table)
                     staff_member = staff_repository.find_by_id(id)
                     if staff_member is not None:
                         self.display.display_table(staff_member, table)
-                        return True
-                    return False
+                        return "display_ok"
 
                 if option == 3:
                     (
@@ -196,16 +198,15 @@ class CrudManager:
                     )
                     if staff_member is not None:
                         self.display.display_table(staff_member, table)
-                        return True
-                    return False
+                        return "display_ok"
 
                 if option == 4:
                     email = self.get_datas.get_email()
                     staff_member = staff_repository.find_by_email(email)
                     if staff_member != []:
                         self.display.display_table(staff_member, table)
-                        return True
-                    return False
+                        return "display_ok"
+
 
     def update(self, table):
         if table == "client":
@@ -251,7 +252,6 @@ class CrudManager:
                         )
                         return "update_ok"
                     elif self.staff_user.department.name == "MANAGEMENT":
-                        print("elifffff")
                         # l'utilisateur management a le choix entre taper le nom du collaborateur ou son id
                         support_contact = self.get_datas.get_support_contact()
 
@@ -321,3 +321,22 @@ class CrudManager:
                     return "not_allowed"
             else:
                 return "unknown_client"
+
+    def delete(self, table):
+        if (
+            self.permissions.permission_create(self.token, table)
+            and table == "staff"
+        ):
+            staff_member_id = self.get_datas.get_id(table)
+            staff_repository = repository.StaffRepository()
+            staff_member = staff_repository.find_by_id(staff_member_id)
+
+            if staff_member is not None:
+                if Confirm.ask("Continue"):
+                    staff_repository.delete_staff()
+                    return "delete_ok"
+                else:
+                    return "canceled"
+            else:
+                return "error"
+        return "not_allowed"

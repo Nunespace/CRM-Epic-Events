@@ -20,7 +20,7 @@ class AuthenticationAndPermissions:
     def create_token(self, department):
         encoded_jwt = jwt.encode(
             {
-                "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=3600),
+                "exp": datetime.now(tz=timezone.utc) + timedelta(seconds=1800),
                 "department": department,
             },
             SECRET,
@@ -42,7 +42,6 @@ class AuthenticationAndPermissions:
                 department = staff_user.department.name
                 token = self.create_token(department)
                 menu_manager = MenuManager(staff_user, token)
-                print("token :", token)
                 self.display.hello(staff_user.first_name)
                 return menu_manager.choice_main_menu()
         self.messages.message_error(None, 1)

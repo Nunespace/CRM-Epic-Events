@@ -14,6 +14,7 @@ blue_console = Console(style="white on blue")
 red_console = Console(style="white on blue")
 # exemple : blue_console.print("I'm blue. Da ba dee da ba di.")
 
+
 class GetDatas:
     def __init__(self):
         self.menu = Menu()
@@ -28,14 +29,14 @@ class GetDatas:
 
     def get_id(self, table):
         if table == "client":
-            id = IntPrompt.ask("N° (id) du client :")
+            id = IntPrompt.ask("N° (id) du client")
         elif table == "event":
-            id = IntPrompt.ask("N° (id) de l'évènement :")
+            id = IntPrompt.ask("N° (id) de l'évènement ")
         elif table == "contract":
-            id = IntPrompt.ask("N° (id) du contrat :")
+            id = IntPrompt.ask("N° (id) du contrat")
         elif table == "staff":
-            id = IntPrompt.ask("N° (id) du collaborateur :")
-        #id = self.chek_id(id_str)
+            id = IntPrompt.ask("N° (id) du collaborateur")
+        # id = self.chek_id(id_str)
         return id
 
     def get_fullname(self):
@@ -51,7 +52,9 @@ class GetDatas:
         return name_event
 
     def get_name_and_first_name_staff(self):
-        blue_console.print("Veuillez taper le nom et le prénom du collaborateur.")
+        blue_console.print(
+            "Veuillez taper le nom et le prénom du collaborateur."
+        )
         name = input("Nom : ").capitalize()
         firstname = input("Prénom : ").capitalize()
         return name, firstname
@@ -105,9 +108,13 @@ class GetDatas:
             blue_console.print("Veuillez taper les données suivantes.")
             name = input("Nom de l'évènement : ").capitalize()
             contract_id = input("numéro (id) du contrat : ")
-            blue_console.print("Indiquer la date et l'heure du début de l'évènement : ")
+            blue_console.print(
+                "Indiquer la date et l'heure du début de l'évènement :"
+            )
             event_date_start = self.get_datetime()
-            blue_console.print("Indiquer la date et l'heure de la fin de l'évènement : ")
+            blue_console.print(
+                "Indiquer la date et l'heure de la fin de l'évènement :"
+            )
             event_date_end = self.get_datetime()
             location = input("lieu : ")
             attendees = input("Nombre de personnes estimé : ")
@@ -170,7 +177,9 @@ class GetDatas:
             re.fullmatch(r"[a-z0-9._-]+@[a-z0-9._-]+\.[a-z0-9._-]+", email)
             is None
         ):
-            red_console.print("Veuillez taper un email valide. Exemple : alice@gmail.com")
+            red_console.print(
+                "Veuillez taper un email valide. Exemple : alice@gmail.com"
+            )
             email = input("Email : ")
         return email
 
@@ -226,7 +235,6 @@ class GetDatas:
         )
         return support_contact.capitalize()
 
-
     def get_department(self):
         print("Liste des départements : ")
         for department in Department:
@@ -236,7 +244,7 @@ class GetDatas:
         )
         department = Department(int(department_number))
         return department.name
-    
+
     def clean(self):
         """Fonction qui efface l'affichage de la console"""
         if platform.system() == "Windows":

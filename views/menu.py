@@ -6,6 +6,7 @@ from rich.prompt import Prompt, IntPrompt
 
 blue_console = Console(style="white on blue")
 
+
 class Menu:
     def __init__(self):
         self.console = Console()
@@ -20,7 +21,7 @@ class Menu:
             1: "Clients",
             2: "Evènements",
             3: "Contrats",
-            4: "Collaborateurs: ",
+            4: "Collaborateurs ",
             5: "Fermer",
         }
         self.console.rule("[bold blue]Menu principal")
@@ -34,7 +35,7 @@ class Menu:
         )
         self.clean()
         return option
-    
+
     def table_name_translation(self, table):
         if table == "client":
             return "Clients"
@@ -77,9 +78,14 @@ class Menu:
             self.console.print(key, "--", menu_options[key], style="blue")
             print()
 
-        option = IntPrompt.ask(
-            "Entrer votre choix : ", choices=["1", "2", "3", "4", "5"]
-        )
+        if table == "staff":
+            option = IntPrompt.ask(
+                "Entrer votre choix : ", choices=["1", "2", "3", "4", "5", "6"]
+            )
+        else:
+            option = IntPrompt.ask(
+                "Entrer votre choix : ", choices=["1", "2", "3", "4", "5"]
+            )
         self.clean()
         return option
 
@@ -88,60 +94,55 @@ class Menu:
         Affiche le sous menu (client ou contrat ou évenènement ou collaborateur)
         retourne le choix de l'utilisateur
         """
-        while True:
+        menu_in_french = self.table_name_translation(table)
+        print()
+        self.console.rule(f"[bold blue]Table {menu_in_french} - Consulter")
+        print()
+        if table == "client":
+            menu_options = {
+                1: "Afficher tous les clients",
+                2: "Trouver un client par son nom",
+                3: "Trouver un client par son numéro (id)",
+                4: "Trouver un client par son email",
+                5: "Retour au menu {menu_in_french}",
+                6: "Fermer",
+            }
+        elif table == "event":
+            menu_options = {
+                1: "Afficher tous les évènements",
+                2: "Afficher tous les évènements sans contact Support",
+                3: "Trouver un évènement par son numéro (id)",
+                4: "Afficher tous les évènements d'un client",
+                5: f"Retour au menu {menu_in_french}",
+                6: "Fermer",
+            }
+        elif table == "contract":
+            menu_options = {
+                1: "Afficher tous les contrats",
+                2: "Trouver un contrat avec le n° (id) du client",
+                3: "Trouver un contrat par son numéro (id)",
+                4: "Trouver un contrat avec le nom de l'évènement",
+                5: f"Retour au menu {menu_in_french}",
+                6: "Fermer",
+            }
+        elif table == "staff":
+            menu_options = {
+                1: "Afficher tous les collaborateurs",
+                2: "Trouver un colloaborateur avec son n° (id)",
+                3: "Trouver un collaborateur avec son nom et prénom",
+                4: "Trouver un collaborateur avec son email",
+                5: f"Retour au menu {menu_in_french}",
+                6: "Fermer",
+            }
+        for key in menu_options:
+            self.console.print(key, "--", menu_options[key], style="blue")
             print()
-            self.console.rule("[bold blue]Consulter")
-            print()
-            if table == "client":
-                menu_options = {
-                    1: "Afficher tous les clients",
-                    2: "Trouver un client par son nom",
-                    3: "Trouver un client par son numéro (id)",
-                    4: "Retour au menu principal",
-                    5: "Fermer",
-                }
-            elif table == "event":
-                menu_options = {
-                    1: "Afficher tous les évènements",
-                    2: "Trouver un évènement par son nom",
-                    3: "Trouver un évènement par son numéro (id)",
-                    4: "Afficher tous les évènements d'un client",
-                    5: "Retour au menu principal",
-                    6: "Fermer",
-                }
-            elif table == "contract":
-                menu_options = {
-                    1: "Afficher tous les contrats",
-                    2: "Trouver un contrat avec le n° (id) du client",
-                    3: "Trouver un contrat par son numéro (id)",
-                    4: "Trouver un contrat avec le nom de l'évènement",
-                    5: "Retour au menu principal",
-                    6: "Fermer",
-                }
-            elif table == "staff":
-                menu_options = {
-                    1: "Afficher tous les collaborateurs",
-                    2: "Trouver un colloaborateur avec son n° (id)",
-                    3: "Trouver un collaborateur avec son nom et prénom",
-                    4: "Trouver un collaborateur avec son email",
-                    5: "Retour au menu principal",
-                    6: "Fermer",
-                }
-            for key in menu_options:
-                self.console.print(key, "--", menu_options[key], style="blue")
-                print()
 
-            if table == "client":
-                option = IntPrompt.ask(
-                    "Entrer votre choix : ", choices=["1", "2", "3", "4", "5"]
-                )
-            else:
-                option = IntPrompt.ask(
-                    "Entrer votre choix : ", choices=["1", "2", "3", "4", "5", "6"]
-                )
-
-            self.clean()
-            return option
+        option = IntPrompt.ask(
+            "Entrer votre choix : ", choices=["1", "2", "3", "4", "5", "6"]
+        )
+        self.clean()
+        return option
 
     def choice_column_to_update(self, table):
         while True:
