@@ -168,7 +168,7 @@ class Display:
             return table_display
         else:
             if result.support_contact_id is not None:
-                support_contact = f"{row.support_contact.first_name} {row.support_contact.name}"
+                support_contact = f"{result.support_contact.first_name} {result.support_contact.name}"
             else:
                 support_contact = None
             table_display.add_row(

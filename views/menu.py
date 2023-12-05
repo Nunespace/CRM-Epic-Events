@@ -89,7 +89,7 @@ class Menu:
         self.clean()
         return option
 
-    def view_menu_read_only(self, table):
+    def view_menu_read_only(self, table, staff_user):
         """
         Affiche le sous menu (client ou contrat ou évenènement ou collaborateur)
         retourne le choix de l'utilisateur
@@ -108,22 +108,36 @@ class Menu:
                 6: "Fermer",
             }
         elif table == "event":
-            menu_options = {
-                1: "Afficher tous les évènements",
-                2: "Afficher tous les évènements sans contact Support",
-                3: "Trouver un évènement par son numéro (id)",
-                4: "Afficher tous les évènements d'un client",
-                5: f"Retour au menu {menu_in_french}",
-                6: "Fermer",
-            }
+            if staff_user.department.name == "SUPPORT":
+                menu_options = {
+                    0: "Afficher mes évènements",
+                    1: "Afficher tous les évènements",
+                    2: "Afficher tous les évènements sans contact Support",
+                    3: "Trouver un évènement par son numéro (id)",
+                    4: "Afficher tous les évènements d'un client",
+                    5: f"Retour au menu {menu_in_french}",
+                    6: "Fermer",
+                }
+            else:
+                menu_options = {
+                    1: "Afficher tous les évènements",
+                    2: "Afficher tous les évènements sans contact Support",
+                    3: "Trouver un évènement par son numéro (id)",
+                    4: "Afficher tous les évènements d'un client",
+                    5: f"Retour au menu {menu_in_french}",
+                    6: "Fermer",
+                }
+
         elif table == "contract":
             menu_options = {
                 1: "Afficher tous les contrats",
-                2: "Trouver un contrat avec le n° (id) du client",
-                3: "Trouver un contrat par son numéro (id)",
-                4: "Trouver un contrat avec le nom de l'évènement",
-                5: f"Retour au menu {menu_in_french}",
-                6: "Fermer",
+                2: "Afﬁcher tous les contrats non signés",
+                3: "Afﬁcher tous les contrats non soldés",
+                4: "Trouver un contrat avec le n° (id) du client",
+                5: "Trouver un contrat par son numéro (id)",
+                6: "Trouver un contrat avec le nom de l'évènement",
+                7: f"Retour au menu {menu_in_french}",
+                8: "Fermer",
             }
         elif table == "staff":
             menu_options = {
@@ -137,10 +151,20 @@ class Menu:
         for key in menu_options:
             self.console.print(key, "--", menu_options[key], style="blue")
             print()
-
-        option = IntPrompt.ask(
-            "Entrer votre choix : ", choices=["1", "2", "3", "4", "5", "6"]
-        )
+        if table == "event" and staff_user.department.name == "SUPPORT":
+            option = IntPrompt.ask(
+                "Entrer votre choix : ",
+                choices=["0", "1", "2", "3", "4", "5", "6"],
+            )
+        elif table == "Contract":
+            option = IntPrompt.ask(
+                "Entrer votre choix : ",
+                choices=["1", "2", "3", "4", "5", "6", "7", "8"],
+            )
+        else:
+            option = IntPrompt.ask(
+                "Entrer votre choix : ", choices=["1", "2", "3", "4", "5", "6"]
+            )
         self.clean()
         return option
 

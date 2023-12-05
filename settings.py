@@ -14,7 +14,7 @@ SECRET = config_jwt["secret"]
 # utilisateur admin est un compte mysql avec une limitation des privilèges sur 
 # la BD epic_events(select, insert, update et delete)
 ENGINE = create_engine(
-    f"mysql+pymysql://admin:{password}@localhost/epic_events", echo=False
+    f"mysql+pymysql://admin:{password}@localhost/epic_events", echo=True
 )
 Session = sessionmaker(bind=ENGINE)
 SESSION = Session()

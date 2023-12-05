@@ -63,16 +63,21 @@ class CrudManager:
                     return "error"
         return "not_allowed"
 
-    def read(self, table):
-        option = self.menu.view_menu_read_only(table)
+    def read(self, table, staff_user):
+        option = self.menu.view_menu_read_only(table, staff_user)
         if self.permissions.check_token_validity(self.token):
-            if option == 5:
+            if table != "contract" and option == 5:
                 return "back"
 
-            elif option == 6:
-
+            elif table != "contract" and option == 6:
                 return "close"
-         
+            
+            elif table == "contract" and option == 7:
+                return "back"
+
+            elif table == "contract" and option == 8:
+                return "close"
+
             elif table == "client":
                 client_repository = repository.ClientRepository()
 
@@ -104,13 +109,22 @@ class CrudManager:
 
             elif table == "event":
                 event_repository = repository.EventRepository()
-                if option == 1:
+                if option == 0:
+                    event = event_repository.get_all_their_event(
+                        self.staff_user.id
+                    )
+                    self.display.display_table(event, table, all=True)
+                    return "display_ok"
+
+                elif option == 1:
                     event = event_repository.get_all()
                     self.display.display_table(event, table, all=True)
                     return "display_ok"
 
                 elif option == 2:
-                    event = event_repository.get_all_with_support_contact_none()
+                    event = (
+                        event_repository.get_all_with_support_contact_none()
+                    )
                     if event is not None:
                         self.display.display_table(event, table, all=True)
                         return "display_ok"
@@ -140,8 +154,18 @@ class CrudManager:
                     contract = contract_repository.get_all()
                     self.display.display_table(contract, table, all=True)
                     return "display_ok"
-
+                
                 elif option == 2:
+                    contract = contract_repository.get_all_unsigned()
+                    self.display.display_table(contract, table, all=True)
+                    return "display_ok"
+                
+                elif option == 3:
+                    contract = contract_repository.get_all_with_positive_balance_due()
+                    self.display.display_table(contract, table, all=True)
+                    return "display_ok"
+
+                elif option == 4:
                     # Recherche d'un contrat avec le nom du client concerné
                     fullname_client = self.get_datas.get_fullname()
                     client_repository = repository.ClientRepository()
@@ -156,14 +180,14 @@ class CrudManager:
                             self.display.display_table(contract, table)
                             return "display_ok"
 
-                elif option == 3:
+                elif option == 5:
                     id = self.get_datas.get_id(table)
                     contract = contract_repository.find_by_id(id)
                     if contract is not None:
                         self.display.display_table(contract, table)
                         return "display_ok"
 
-                elif option == 4:
+                elif option == 6:
                     # Recherche d'un contrat avec le nom d'un évènement
                     name_event = self.get_datas.get_name_event()
                     event_repository = repository.EventRepository()
@@ -173,6 +197,8 @@ class CrudManager:
                         if contract is not None:
                             self.display.display_table(contract, table)
                             return "display_ok"
+                        
+                
 
             elif table == "staff":
                 staff_repository = repository.StaffRepository()
@@ -206,7 +232,6 @@ class CrudManager:
                     if staff_member != []:
                         self.display.display_table(staff_member, table)
                         return "display_ok"
-
 
     def update(self, table):
         if table == "client":

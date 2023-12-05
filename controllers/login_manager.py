@@ -1,4 +1,5 @@
 from passlib.hash import argon2
+from sentry_sdk import set_user
 from settings import SECRET, SESSION
 import jwt
 from datetime import datetime, timedelta, timezone
@@ -45,4 +46,6 @@ class AuthenticationAndPermissions:
                 self.display.hello(staff_user.first_name)
                 return menu_manager.choice_main_menu()
         self.messages.message_error(None, 1)
+        email_user = staff_user.email
+        set_user({f'"email": {email_user}'})
         return self.check_password()

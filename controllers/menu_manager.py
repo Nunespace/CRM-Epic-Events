@@ -16,7 +16,7 @@ class MenuManager:
         self.get_datas = GetDatas()
         self.permissions = Permissions()
         self.crud = CrudManager(staff_user, token)
-        self.staff_id = staff_user
+        self.staff_user = staff_user
 
     def choice_main_menu(self):
         """
@@ -42,7 +42,7 @@ class MenuManager:
         # car tous les collaborateurs authentifiés sont autorisées à lire les données
 
         if option == 1:
-            return_of_order = self.crud.read(table)
+            return_of_order = self.crud.read(table, self.staff_user)
             if (
                 return_of_order == "display_ok"
                 or return_of_order == "back"

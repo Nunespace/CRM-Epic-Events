@@ -1,3 +1,5 @@
+import sentry_sdk
+import logging
 from sqlalchemy import text
 from settings import SESSION, ENGINE
 from .models import Client, Event, Contract, Staff
@@ -5,7 +7,9 @@ from .models import Client, Event, Contract, Staff
 
 class ClientRepository:
     def find_by_fullname(self, fullname):
-        return SESSION.query(Client).filter(Client.fullname == fullname).first()
+        return (
+            SESSION.query(Client).filter(Client.fullname == fullname).first()
+        )
 
     def find_by_id(self, id):
         return SESSION.query(Client).filter(Client.id == id).first()
@@ -53,9 +57,12 @@ class EventRepository:
 
     def get_all(self):
         return SESSION.query(Event).all()
-    
+
     def get_all_with_support_contact_none(self):
         return SESSION.query(Event).filter_by(support_contact_id=None)
+    
+    def get_all_their_event(self, staff_member_id):
+        return SESSION.query(Event).filter_by(support_contact_id=staff_member_id)
 
     def create_event(self, datas, client_id):
         event = Event(
@@ -108,6 +115,12 @@ class ContractRepository:
     def get_all(self):
         return SESSION.query(Contract).all()
 
+    def get_all_unsigned(self):
+        return SESSION.query(Contract).filter_by(status=False)
+
+    def get_all_with_positive_balance_due(self):
+        return SESSION.query(Contract).filter(Contract.balance_due > 0)
+
     def create_contract(self, datas):
         client = ClientRepository().find_by_id(datas["client_id"])
         commercial_contact_id = client.commercial_contact_id
@@ -144,7 +157,11 @@ class StaffRepository:
         return SESSION.query(Staff).filter(Staff.id == id).first()
 
     def find_by_name_and_firstname(self, name, first_name):
-        return SESSION.query(Staff).filter((Staff.name == name) & (Staff.first_name == first_name)).one_or_none()
+        return (
+            SESSION.query(Staff)
+            .filter((Staff.name == name) & (Staff.first_name == first_name))
+            .one_or_none()
+        )
 
     def find_by_email(self, email):
         return SESSION.query(Staff).filter_by(email=email).all()
@@ -159,7 +176,8 @@ class StaffRepository:
         )
         SESSION.add(staff)
         SESSION.commit()
-
+ 
+    @sentry_sdk.trace
     def update_staff(self, staff_id, column, new_value):
         staff_member = SESSION.query(Staff).filter_by(id=staff_id).first()
         if column == "name":
@@ -171,6 +189,7 @@ class StaffRepository:
         elif column == "department":
             staff_member.department == new_value
         SESSION.commit()
+        logging.info("Collaborateur modifié")
 
     def delete_staff(self, staff):
         SESSION.delete(staff)
