@@ -1,19 +1,14 @@
+import sentry_sdk
+import logging
+from sentry_sdk.integrations.logging import LoggingIntegration
 from controllers.login_manager import AuthenticationAndPermissions
-from settings import Base, ENGINE
-import sentry_sdk
-from sentry_sdk import capture_message
-import logging
-from sentry_sdk.integrations.logging import LoggingIntegration
-from sqlalchemy.sql import text
-import logging
-import sentry_sdk
-from sentry_sdk.integrations.logging import LoggingIntegration
+from settings import Base, ENGINE, DSN
 
 
 def login():
     logging.basicConfig(level=logging.INFO)
     sentry_sdk.init(
-        dsn="https://f16713045bb51604e66355f096694966@o4506343489601536.ingest.sentry.io/4506345513811968",
+        dsn=DSN,
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         traces_sample_rate=1.0,
@@ -22,6 +17,8 @@ def login():
         # We recommend adjusting this value in production.
         profiles_sample_rate=1.0,
         enable_tracing=True,
+        debug=False,
+        environment="development",
         integrations=[
             LoggingIntegration(
                 level=logging.INFO,  # Capture info and above as breadcrumbs
@@ -33,11 +30,6 @@ def login():
     Base.metadata.create_all(ENGINE)
     run = AuthenticationAndPermissions()
     run.check_password()
-    statement = text("SELECT 'Hello World'")
-
-    with ENGINE.connect() as conn:
-        with sentry_sdk.start_transaction(name="testing_sentry"):
-            result = conn.execute(statement)
 
 
 if __name__ == "__main__":

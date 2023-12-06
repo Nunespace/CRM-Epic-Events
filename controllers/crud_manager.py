@@ -71,7 +71,7 @@ class CrudManager:
 
             elif table != "contract" and option == 6:
                 return "close"
-            
+
             elif table == "contract" and option == 7:
                 return "back"
 
@@ -101,7 +101,7 @@ class CrudManager:
                         return "display_ok"
 
                 elif option == 4:
-                    client_email = self.get_datas.get_email(table)
+                    client_email = self.get_datas.get_email()
                     client = client_repository.find_by_email(client_email)
                     if client is not None:
                         self.display.display_table(client, table)
@@ -154,30 +154,34 @@ class CrudManager:
                     contract = contract_repository.get_all()
                     self.display.display_table(contract, table, all=True)
                     return "display_ok"
-                
+
                 elif option == 2:
                     contract = contract_repository.get_all_unsigned()
                     self.display.display_table(contract, table, all=True)
                     return "display_ok"
-                
+
                 elif option == 3:
-                    contract = contract_repository.get_all_with_positive_balance_due()
+                    contract = (
+                        contract_repository.get_all_with_positive_balance_due()
+                    )
                     self.display.display_table(contract, table, all=True)
                     return "display_ok"
 
                 elif option == 4:
-                    # Recherche d'un contrat avec le nom du client concerné
-                    fullname_client = self.get_datas.get_fullname()
+                    # Recherche d'un contrat avec l'id du client
+                    client_id = self.get_datas.get_id("client")
                     client_repository = repository.ClientRepository()
-                    client = client_repository.find_by_fullname(
-                        fullname_client
+                    client = client_repository.find_by_id(
+                        client_id
                     )
                     if client is not None:
                         contract = contract_repository.find_by_client(
                             client.id
                         )
                         if contract is not None:
-                            self.display.display_table(contract, table)
+                            self.display.display_table(
+                                contract, table, all=True
+                            )
                             return "display_ok"
 
                 elif option == 5:
@@ -188,17 +192,16 @@ class CrudManager:
                         return "display_ok"
 
                 elif option == 6:
-                    # Recherche d'un contrat avec le nom d'un évènement
-                    name_event = self.get_datas.get_name_event()
+                    # Recherche d'un contrat avec l'id d'un évènement
+                    event_id = self.get_datas.get_id("event")
                     event_repository = repository.EventRepository()
-                    event = event_repository.find_by_name(name_event, table)
+                    event = event_repository.find_by_id(event_id)
                     if event is not None:
-                        contract = contract_repository.find_by_event(event.id)
+                        contract_id = event.contract_id
+                        contract = contract_repository.find_by_id(contract_id)
                         if contract is not None:
                             self.display.display_table(contract, table)
                             return "display_ok"
-                        
-                
 
             elif table == "staff":
                 staff_repository = repository.StaffRepository()
@@ -243,11 +246,19 @@ class CrudManager:
                     self.staff_user.id, client.id, self.token, table
                 ):
                     column_to_update = self.menu.choice_column_to_update(table)
-                    new_value = self.get_datas.get_new_value(column_to_update)
-                    client_repository.update_client(
-                        client.id, column_to_update, new_value
-                    )
-                    return "update_ok"
+                    if (
+                        column_to_update == "Retour"
+                        or column_to_update == "Fermer"
+                    ):
+                        return column_to_update
+                    else:
+                        new_value = self.get_datas.get_new_value(
+                            column_to_update
+                        )
+                        client_repository.update_client(
+                            client.id, column_to_update, new_value
+                        )
+                        return "update_ok"
                 else:
                     return "not_allowed"
             else:
@@ -263,19 +274,23 @@ class CrudManager:
                 if self.permissions.permission_update(
                     self.staff_user.id, event.id, self.token, table
                 ):
-                    print("rrrr")
                     if self.staff_user.department.name == "SUPPORT":
                         column_to_update = self.menu.choice_column_to_update(
                             table
                         )
-                        print("column_to_update : ", column_to_update)
-                        new_value = self.get_datas.get_new_value(
-                            column_to_update
-                        )
-                        event_repository.update_event(
-                            event_id, column_to_update, new_value
-                        )
-                        return "update_ok"
+                        if (
+                            column_to_update == "Retour"
+                            or column_to_update == "Fermer"
+                        ):
+                            return column_to_update
+                        else:
+                            new_value = self.get_datas.get_new_value(
+                                column_to_update
+                            )
+                            event_repository.update_event(
+                                event_id, column_to_update, new_value
+                            )
+                            return "update_ok"
                     elif self.staff_user.department.name == "MANAGEMENT":
                         # l'utilisateur management a le choix entre taper le nom du collaborateur ou son id
                         support_contact = self.get_datas.get_support_contact()
@@ -305,22 +320,30 @@ class CrudManager:
                 return "unknown_client"
 
         elif table == "contract":
+            if self.staff_user.department.name == "SUPPORT":
+                return "not_allowed"
             contract_id = self.get_datas.get_id(table)
             contract_repository = repository.ContractRepository()
             contract = contract_repository.find_by_id(contract_id)
             client_id = contract.client_id
-            print("contract : ", contract)
-            print("contract_id = ", contract_id)
             if contract is not None:
                 if self.permissions.permission_update(
                     self.staff_user.id, client_id, self.token, table
                 ):
                     column_to_update = self.menu.choice_column_to_update(table)
-                    new_value = self.get_datas.get_new_value(column_to_update)
-                    contract_repository.update_contract(
-                        contract.id, column_to_update, new_value
-                    )
-                    return "update_ok"
+                    if (
+                        column_to_update == "Retour"
+                        or column_to_update == "Fermer"
+                    ):
+                        return column_to_update
+                    else:
+                        new_value = self.get_datas.get_new_value(
+                            column_to_update
+                        )
+                        contract_repository.update_contract(
+                            contract.id, column_to_update, new_value
+                        )
+                        return "update_ok"
                 else:
                     return "not_allowed"
             else:
@@ -337,11 +360,21 @@ class CrudManager:
                     self.staff_user.id, staff_member.id, self.token, table
                 ):
                     column_to_update = self.menu.choice_column_to_update(table)
-                    new_value = self.get_datas.get_new_value(column_to_update)
-                    staff_repository.update_staff(
-                        staff_member.id, column_to_update, new_value
-                    )
-                    return "update_ok"
+                    if (
+                        column_to_update == "Retour"
+                        or column_to_update == "Fermer"
+                    ):
+                        return column_to_update
+                    else:
+                        new_value = self.get_datas.get_new_value(
+                            column_to_update
+                        )
+                        print("new_value : ", new_value)
+                        print("column_to_update : ", column_to_update)
+                        staff_repository.update_staff(
+                            staff_member.id, column_to_update, new_value
+                        )
+                        return "update_ok"
                 else:
                     return "not_allowed"
             else:
@@ -357,8 +390,8 @@ class CrudManager:
             staff_member = staff_repository.find_by_id(staff_member_id)
 
             if staff_member is not None:
-                if Confirm.ask("Continue"):
-                    staff_repository.delete_staff()
+                if Confirm.ask("Confirmer la suppression"):
+                    staff_repository.delete_staff(staff_member)
                     return "delete_ok"
                 else:
                     return "canceled"

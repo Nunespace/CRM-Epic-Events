@@ -11,10 +11,14 @@ config_root = config["admin"]
 password = config_root["password"]
 config_jwt = config["jwt"]
 SECRET = config_jwt["secret"]
+ALGORITHME = config_jwt["algorithme"]
+config_sentry = config["sentry"]
+DSN = config_sentry["dsn"]
+
 # utilisateur admin est un compte mysql avec une limitation des privilèges sur 
 # la BD epic_events(select, insert, update et delete)
 ENGINE = create_engine(
-    f"mysql+pymysql://admin:{password}@localhost/epic_events", echo=True
+    f"mysql+pymysql://admin:{password}@localhost/epic_events", echo=False
 )
 Session = sessionmaker(bind=ENGINE)
 SESSION = Session()

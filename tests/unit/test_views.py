@@ -34,18 +34,23 @@ class TestMenu:
 
 
 class TestGetDatas:
-
     def test_get_credentials(self, mocker):
-        #mocker.patch("builtins.input", return_value=("test"))
-        mock_ask = mocker.patch("views.get_datas.Prompt.ask", side_effect=["me@example.com", "mon mot de passe"])
+        # mocker.patch("builtins.input", return_value=("test"))
+        mock_ask = mocker.patch(
+            "views.get_datas.Prompt.ask",
+            side_effect=["me@example.com", "mon mot de passe"],
+        )
         get_datas_test = get_datas.GetDatas()
-        assert get_datas_test.get_credentials() == ("me@example.com", "mon mot de passe")
+        assert get_datas_test.get_credentials() == (
+            "me@example.com",
+            "mon mot de passe",
+        )
 
     def test_get_id_client(self, mocker):
         mocker.patch("builtins.input", return_value="2")
         get_datas_test = get_datas.GetDatas()
         assert get_datas_test.get_id("client") == 2
-    
+
     def test_get_id_staff(self, mocker):
         mocker.patch("builtins.input", return_value="4")
         get_datas_test = get_datas.GetDatas()
@@ -64,22 +69,12 @@ class TestGetDatas:
     def test_check_email(self):
         email = "essai@gmail.com"
         email_checked = get_datas.GetDatas()
-        assert email_checked.chek_email(email) == email
+        assert email_checked.check_email(email) == email
 
     def test_check_id(self):
         id = "4"
         id_checked = get_datas.GetDatas()
         assert id_checked.chek_id(id) == 4
-
-    def test_check_phone(self):
-        phone = "0405060514"
-        phone_checked = get_datas.GetDatas()
-        assert phone_checked.chek_phone(phone) == 405060514
-
-    def test_check_number(self):
-        number = "1650"
-        number_checked = get_datas.GetDatas()
-        assert number_checked.chek_number(number) == 1650
 
     def test_check_status_true(self):
         status = "1"

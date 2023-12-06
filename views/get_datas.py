@@ -10,15 +10,12 @@ from views.menu import Menu
 from models.models import Department
 from rich.console import Console
 
-blue_console = Console(style="white on blue")
-red_console = Console(style="white on blue")
-# exemple : blue_console.print("I'm blue. Da ba dee da ba di.")
-
 
 class GetDatas:
     def __init__(self):
         self.menu = Menu()
         self.console = Console()
+        self.blue_console = Console(style="white on blue")
 
     def get_credentials(self):
         print()
@@ -40,28 +37,24 @@ class GetDatas:
         return id
 
     def get_fullname(self):
-        blue_console.print("Veuillez taper le nom complet du client.")
-        name = input("Nom : ").capitalize()
+        name = input("Nom du client: ").capitalize()
         firstname = input("Prénom : ").capitalize()
         fullname = firstname + " " + name
         return fullname
 
     def get_name_event(self):
-        blue_console.print("Veuillez taper le nom de l'évènement.")
+        self.blue_console.print("Veuillez taper le nom de l'évènement.")
         name_event = input("Nom : ").capitalize()
         return name_event
 
     def get_name_and_first_name_staff(self):
-        blue_console.print(
-            "Veuillez taper le nom et le prénom du collaborateur."
-        )
         name = input("Nom : ").capitalize()
         firstname = input("Prénom : ").capitalize()
         return name, firstname
 
     def get_email(self):
         email = input("Veuillez taper l'email : ")
-        email = self.chek_email(email)
+        email = self.check_email(email)
         return email
 
     def hash_password(self, password):
@@ -90,12 +83,11 @@ class GetDatas:
 
     def get_create_datas(self, table):
         if table == "client":
-            blue_console.print("Veuillez taper les données suivantes.")
+            self.blue_console.print("Veuillez taper les données suivantes.")
             fullname = self.get_fullname()
             email_input = input("Email : ")
-            email = self.chek_email(email_input)
-            phone_input = int(input("Téléphone : "))
-            phone = self.check_phone(phone_input)
+            email = self.check_email(email_input)
+            phone = IntPrompt.ask("Téléphone")
             name_company = input("Nom de l'entreprise : ")
             datas = {
                 "fullname": fullname,
@@ -105,14 +97,14 @@ class GetDatas:
             }
             return datas
         elif table == "event":
-            blue_console.print("Veuillez taper les données suivantes.")
+            self.blue_console.print("Veuillez taper les données suivantes.")
             name = input("Nom de l'évènement : ").capitalize()
             contract_id = input("numéro (id) du contrat : ")
-            blue_console.print(
+            self.blue_console.print(
                 "Indiquer la date et l'heure du début de l'évènement :"
             )
             event_date_start = self.get_datetime()
-            blue_console.print(
+            self.blue_console.print(
                 "Indiquer la date et l'heure de la fin de l'évènement :"
             )
             event_date_end = self.get_datetime()
@@ -131,16 +123,11 @@ class GetDatas:
             return datas
 
         elif table == "contract":
-            blue_console.print("Veuillez taper les données suivantes.")
+            self.blue_console.print("Veuillez taper les données suivantes.")
             client_id = input("N° (id) du client : ")
-            total_amount = input("Montant total : ")
-            total_amount = self.chek_number(total_amount)
-            balance_due = input("Montant restant à payer : ")
-            balance_due = self.chek_number(balance_due)
-            status_input = input(
-                "Contrat signé? Taper 1 pour OUI, 2 pour NON : "
-            )
-            status = self.check_status(status_input)
+            total_amount = IntPrompt.ask("Montant total")
+            balance_due = IntPrompt.ask("Montant restant à payer")
+            status = self.get_status_contract()
             datas = {
                 "client_id": client_id,
                 "total_amount": total_amount,
@@ -150,7 +137,7 @@ class GetDatas:
             return datas
 
         elif table == "staff":
-            blue_console.print("Veuillez taper les données suivantes.")
+            self.blue_console.print("Veuillez taper les données suivantes.")
             name, first_name = self.get_name_and_first_name_staff()
             email = self.get_email()
             password_hashed = self.get_password()
@@ -165,69 +152,50 @@ class GetDatas:
             return datas
 
     def get_datetime(self):
-        year = input("année (ex : 2023) : ")
-        month = input("mois (ex : 01): ")
-        day = input("jour (ex : 04): ")
-        hour = input("heure (ex : 14): ")
+        year = IntPrompt.ask("année (ex : 2023) : ")
+        month = IntPrompt.ask("mois (ex : 01): ")
+        day = IntPrompt.ask("jour (ex : 04): ")
+        hour = IntPrompt.ask("heure (ex : 14): ")
         date_time = f"{year}-{month}-{day} {hour}:00"
         return date_time
 
-    def chek_email(self, email):
+    def check_email(self, email):
         while (
             re.fullmatch(r"[a-z0-9._-]+@[a-z0-9._-]+\.[a-z0-9._-]+", email)
             is None
         ):
-            red_console.print(
+            self.blue_console.print(
                 "Veuillez taper un email valide. Exemple : alice@gmail.com"
             )
             email = input("Email : ")
         return email
 
-    """
-    def chek_id(self, id):
-        while re.fullmatch(r"[0-9]", id) is None:
-            print("Veuillez taper un nombre entre 0 et 9")
-            id = input("id : ")
-        return int(id)
-    """
-
-    def chek_phone(self, phone):
-        while re.fullmatch(r"[0-9]+", phone) is None:
-            red_console.print(
-                "Le n° de téléphone doit être composé uniquement de chiffres, sans espaces."
-            )
-            phone = input("N° de téléphone : ")
-        return int(phone)
-
-    def chek_number(self, number_input):
-        while re.fullmatch(r"[0-9]+", number_input) is None:
-            red_console.printrint(
-                "Le montant doit être composé uniquement de chiffres, sans espaces."
-            )
-            number_input = input("Montant : ")
-        return int(number_input)
-
-    def check_status(self, status_input):
-        while re.fullmatch(r"[1-2]", status_input) is None:
-            print()
-            status_input = input(
-                "Contrat signé? Merci de taper 1 pour OUI ou 2 pour NON : "
-            )
-        if status_input == "1":
+    def get_status_contract(self):
+        option = Prompt.ask(
+            "Le contrat est-il signé?",
+            choices=["y", "n"],
+        )
+        if option == "y":
             return True
-        elif status_input == "2":
+        elif option == "n":
             return False
 
     def get_new_value(self, column):
-        new_value = input("Veuillez entrer la nouvelle valeur : ")
-        if column == "email":
-            email = self.chek_email(new_value)
-            return email
-        if column == "phone":
-            phone = self.chek_phone(new_value)
-            return phone
+        if column == "status":
+            return self.get_status_contract()
+        elif column == "password":
+            return self.get_password()
+        elif column == "phone":
+            return IntPrompt.ask("N° de téléphone")
+        elif column == "total_amount" or column == "balance_due":
+            return IntPrompt.ask("Nouveau montant")
         else:
-            return new_value
+            new_value = input("Veuillez entrer la nouvelle valeur : ")
+            if column == "email":
+                email = self.check_email(new_value)
+                return email
+            else:
+                return new_value
 
     def get_support_contact(self):
         support_contact = input(
@@ -236,9 +204,9 @@ class GetDatas:
         return support_contact.capitalize()
 
     def get_department(self):
-        print("Liste des départements : ")
+        self.blue_console.print("Liste des départements : ")
         for department in Department:
-            print(f"{department.name} : {department.value}")
+            self.blue_console.print(f"{department.name} : {department.value}")
         department_number = input(
             "Veuillez entrer le n° du département choisi : "
         )

@@ -77,6 +77,11 @@ class MenuManager:
             elif return_of_order == "not_allowed":
                 self.messages.message_error(table, 5)
                 return self.choice_main_menu()
+            elif return_of_order == "Retour":
+                return self.choice_submenu(table)
+            elif return_of_order == "Fermer":
+                SESSION.close()
+                exit()
 
         elif option == 4 and table != "staff":
             return self.choice_main_menu()
@@ -84,7 +89,7 @@ class MenuManager:
         elif option == 4 and table == "staff":
             return_of_order = self.crud.delete(table)
             if return_of_order == "delete_ok":
-                self.messages_ok(table, 3)
+                self.messages.messages_ok(table, 3)
                 return self.choice_main_menu()
             elif return_of_order == "canceled":
                 return self.choice_main_menu()

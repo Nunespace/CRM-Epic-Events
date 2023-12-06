@@ -1,15 +1,13 @@
 import os
 import platform
-import time
 from rich.console import Console
-from rich.prompt import Prompt, IntPrompt
-
-blue_console = Console(style="white on blue")
+from rich.prompt import IntPrompt
 
 
 class Menu:
     def __init__(self):
         self.console = Console()
+        self.blue_console = Console(style="white on blue")
 
     def main_menu(self):
         """
@@ -27,7 +25,7 @@ class Menu:
         self.console.rule("[bold blue]Menu principal")
         print()
         for key in menu_options:
-            self.console.print(key, "--", menu_options[key], style="blue")
+            self.console.print(f"{key}--{menu_options[key]}", style="blue")
             print()
 
         option = IntPrompt.ask(
@@ -104,7 +102,7 @@ class Menu:
                 2: "Trouver un client par son nom",
                 3: "Trouver un client par son numéro (id)",
                 4: "Trouver un client par son email",
-                5: "Retour au menu {menu_in_french}",
+                5: f"Retour au menu {menu_in_french}",
                 6: "Fermer",
             }
         elif table == "event":
@@ -135,7 +133,7 @@ class Menu:
                 3: "Afﬁcher tous les contrats non soldés",
                 4: "Trouver un contrat avec le n° (id) du client",
                 5: "Trouver un contrat par son numéro (id)",
-                6: "Trouver un contrat avec le nom de l'évènement",
+                6: "Trouver un contrat avec le n° (id) de l'évènement",
                 7: f"Retour au menu {menu_in_french}",
                 8: "Fermer",
             }
@@ -178,7 +176,7 @@ class Menu:
                     2: "email",
                     3: "phone",
                     4: "name_company",
-                    5: "Retour au menu principal",
+                    5: "Retour",
                     6: "Fermer",
                 }
 
@@ -194,7 +192,7 @@ class Menu:
                     7: "location",
                     8: "attendees",
                     9: "notes",
-                    10: "Retour au menu principal",
+                    10: "Retour",
                     11: "Fermer",
                 }
 
@@ -205,7 +203,7 @@ class Menu:
                     2: "total_amount",
                     3: "balance_due",
                     4: "status",
-                    5: "Retour au menu principal",
+                    5: "Retour",
                     6: "Fermer",
                 }
 
@@ -216,13 +214,15 @@ class Menu:
                     2: "first_name",
                     3: "email",
                     4: "password",
-                    5: "Retour au menu principal",
+                    5: "Retour",
                     6: "Fermer",
                 }
-            blue_console.print("Liste des champs modifiables : ")
+            self.blue_console.print("Liste des champs modifiables : ")
+            print()
             for key in list_of_editable_update_columns:
-                self.console.print(
-                    key, list_of_editable_update_columns[key], style="blue"
+                self.blue_console.print(
+                    key,
+                    list_of_editable_update_columns[key],
                 )
                 print()
             if table == "event":

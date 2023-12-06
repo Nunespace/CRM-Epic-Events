@@ -1,6 +1,6 @@
 from passlib.hash import argon2
 from sentry_sdk import set_user
-from settings import SECRET, SESSION
+from settings import SECRET, ALGORITHME, SESSION
 import jwt
 from datetime import datetime, timedelta, timezone
 from controllers.menu_manager import MenuManager
@@ -25,7 +25,7 @@ class AuthenticationAndPermissions:
                 "department": department,
             },
             SECRET,
-            algorithm="HS256",
+            algorithm=ALGORITHME,
         )
         return encoded_jwt
 
@@ -45,7 +45,9 @@ class AuthenticationAndPermissions:
                 menu_manager = MenuManager(staff_user, token)
                 self.display.hello(staff_user.first_name)
                 return menu_manager.choice_main_menu()
-        self.messages.message_error(None, 1)
-        email_user = staff_user.email
-        set_user({f'"email": {email_user}'})
-        return self.check_password()
+            else:
+                self.messages.message_error(None, 1)
+                return self.check_password()
+        else:
+            self.messages.message_error(None, 0)
+            return self.check_password()

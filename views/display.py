@@ -1,12 +1,10 @@
 import os
 import platform
-import click
 import time
 from rich.console import Console
 from rich.table import Table
 from rich import box
 from rich.panel import Panel
-from rich.padding import Padding
 
 
 class Display:
@@ -42,8 +40,10 @@ class Display:
         if table_display.rows:
             self.console.print(table_display)
         else:
-            self.console.print("[i]Pas de résultat...[/i]", style="indian_red1")
-        
+            self.console.print(
+                "[i]Pas de résultat...[/i]", style="indian_red1"
+            )
+
         print()
         time.sleep(4)
 
@@ -116,7 +116,7 @@ class Display:
         else:
             table_display.add_row(
                 f"{result.id}",
-                f"{result.client_fullname}",
+                f"{result.client.fullname}",
                 f"{result.commercial_contact.first_name} {result.commercial_contact.name}",
                 f"{result.total_amount}",
                 f"{result.balance_due}",
@@ -136,9 +136,7 @@ class Display:
         table_display.add_column("Id", style="cyan")
         table_display.add_column("Nom de l'évènement", style="cyan")
         table_display.add_column("Contrat (id)", style="magenta")
-        table_display.add_column(
-            "Client", style="cyan", width=18
-        )
+        table_display.add_column("Client", style="cyan", width=18)
         table_display.add_column("Contact support", style="green")
         table_display.add_column("Début", style="magenta", width=10)
         table_display.add_column("Fin", style="magenta", width=10)

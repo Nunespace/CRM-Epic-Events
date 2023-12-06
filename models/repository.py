@@ -15,7 +15,7 @@ class ClientRepository:
         return SESSION.query(Client).filter(Client.id == id).first()
 
     def find_by_email(self, email):
-        return SESSION.query(Client).filter_by(email=email).all()
+        return SESSION.query(Client).filter_by(email=email).first()
 
     def get_all(self):
         return SESSION.query(Client).all()
@@ -60,9 +60,11 @@ class EventRepository:
 
     def get_all_with_support_contact_none(self):
         return SESSION.query(Event).filter_by(support_contact_id=None)
-    
+
     def get_all_their_event(self, staff_member_id):
-        return SESSION.query(Event).filter_by(support_contact_id=staff_member_id)
+        return SESSION.query(Event).filter_by(
+            support_contact_id=staff_member_id
+        )
 
     def create_event(self, datas, client_id):
         event = Event(
@@ -109,9 +111,6 @@ class ContractRepository:
     def find_by_client(self, client_id):
         return SESSION.query(Contract).filter_by(client_id=client_id).all()
 
-    def find_by_event(self, event_id):
-        return SESSION.query(Contract).filter_by(event_id=event_id).all()
-
     def get_all(self):
         return SESSION.query(Contract).all()
 
@@ -147,6 +146,10 @@ class ContractRepository:
         elif column == "status":
             contract.status = new_value
         SESSION.commit()
+        if column == "status" and new_value == True:
+            logging.info(
+                f"Le contrat n°{contract_id} du client : {contract.client.fullname} a été signé."
+            )
 
 
 class StaffRepository:
@@ -176,8 +179,10 @@ class StaffRepository:
         )
         SESSION.add(staff)
         SESSION.commit()
- 
-    @sentry_sdk.trace
+        logging.info(
+            f"Le collaborateur {datas["first_name"]} {datas["name"]} a été créé."
+        )
+
     def update_staff(self, staff_id, column, new_value):
         staff_member = SESSION.query(Staff).filter_by(id=staff_id).first()
         if column == "name":
@@ -186,11 +191,18 @@ class StaffRepository:
             staff_member.first_name = new_value
         elif column == "email":
             staff_member.email = new_value
+        elif column == "password":
+            staff_member.password = new_value
         elif column == "department":
             staff_member.department == new_value
         SESSION.commit()
-        logging.info("Collaborateur modifié")
+        logging.info(
+            f"Le {column} du collaborateur {staff_member.first_name} {staff_member.name} a été modifié."
+        )
 
-    def delete_staff(self, staff):
-        SESSION.delete(staff)
+    def delete_staff(self, staff_member):
+        SESSION.delete(staff_member)
         SESSION.commit()
+        logging.info(
+            f"Le collaborateur {staff_member.first_name} {staff_member.name} a été modifié."
+        )
