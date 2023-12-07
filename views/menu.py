@@ -97,14 +97,25 @@ class Menu:
         self.console.rule(f"[bold blue]Table {menu_in_french} - Consulter")
         print()
         if table == "client":
-            menu_options = {
-                1: "Afficher tous les clients",
-                2: "Trouver un client par son nom",
-                3: "Trouver un client par son numéro (id)",
-                4: "Trouver un client par son email",
-                5: f"Retour au menu {menu_in_french}",
-                6: "Fermer",
-            }
+            if staff_user.department.name == "COMMERCIAL":
+                menu_options = {
+                    0: "Afficher tous mes clients",
+                    1: "Afficher tous les clients",
+                    2: "Trouver un client par son nom",
+                    3: "Trouver un client par son numéro (id)",
+                    4: "Trouver un client par son email",
+                    5: f"Retour au menu {menu_in_french}",
+                    6: "Fermer",
+                }
+            else:
+                menu_options = {
+                    1: "Afficher tous les clients",
+                    2: "Trouver un client par son nom",
+                    3: "Trouver un client par son numéro (id)",
+                    4: "Trouver un client par son email",
+                    5: f"Retour au menu {menu_in_french}",
+                    6: "Fermer",
+                }
         elif table == "event":
             if staff_user.department.name == "SUPPORT":
                 menu_options = {
@@ -128,9 +139,10 @@ class Menu:
 
         elif table == "contract":
             menu_options = {
-                1: "Afficher tous les contrats",
-                2: "Afﬁcher tous les contrats non signés",
-                3: "Afﬁcher tous les contrats non soldés",
+                0: "Afficher tous les contrats",
+                1: "Afficher tous les contrats qui n'ont pas d'évènement associé",
+                2: "Afficher tous les contrats non signés",
+                3: "Afficher tous les contrats non soldés",
                 4: "Trouver un contrat avec le n° (id) du client",
                 5: "Trouver un contrat par son numéro (id)",
                 6: "Trouver un contrat avec le n° (id) de l'évènement",
@@ -146,18 +158,23 @@ class Menu:
                 5: f"Retour au menu {menu_in_french}",
                 6: "Fermer",
             }
+
         for key in menu_options:
             self.console.print(key, "--", menu_options[key], style="blue")
             print()
-        if table == "event" and staff_user.department.name == "SUPPORT":
+
+        if (
+            table == "client" and staff_user.department.name == "COMMERCIAL"
+        ) or (table == "event" and staff_user.department.name == "SUPPORT"):
             option = IntPrompt.ask(
                 "Entrer votre choix : ",
                 choices=["0", "1", "2", "3", "4", "5", "6"],
             )
-        elif table == "Contract":
+
+        elif table == "contract":
             option = IntPrompt.ask(
                 "Entrer votre choix : ",
-                choices=["1", "2", "3", "4", "5", "6", "7", "8"],
+                choices=["0", "1", "2", "3", "4", "5", "6", "7", "8"],
             )
         else:
             option = IntPrompt.ask(
@@ -182,18 +199,17 @@ class Menu:
 
             elif table == "event":
                 self.console.rule("[bold blue]Modifier un èvènement")
+                # les champs client_id et contract_id ne sont pas modifiables
                 list_of_editable_update_columns = {
                     1: "name",
-                    2: "contract_id",
-                    3: "client_id",
-                    4: "support_contact_id",
-                    5: "event_date_start",
-                    6: "event_date_end",
-                    7: "location",
-                    8: "attendees",
-                    9: "notes",
-                    10: "Retour",
-                    11: "Fermer",
+                    2: "support_contact_id",
+                    3: "event_date_start",
+                    4: "event_date_end",
+                    5: "location",
+                    6: "attendees",
+                    7: "notes",
+                    8: "Retour",
+                    9: "Fermer",
                 }
 
             elif table == "contract":
@@ -238,8 +254,6 @@ class Menu:
                         "7",
                         "8",
                         "9",
-                        "10",
-                        "11",
                     ],
                 )
             else:

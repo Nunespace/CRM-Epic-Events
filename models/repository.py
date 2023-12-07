@@ -8,17 +8,22 @@ from .models import Client, Event, Contract, Staff
 class ClientRepository:
     def find_by_fullname(self, fullname):
         return (
-            SESSION.query(Client).filter(Client.fullname == fullname).first()
+            SESSION.query(Client).filter(Client.fullname == fullname).one_or_none()
         )
 
     def find_by_id(self, id):
-        return SESSION.query(Client).filter(Client.id == id).first()
+        return SESSION.query(Client).filter(Client.id == id).one_or_none()
 
     def find_by_email(self, email):
-        return SESSION.query(Client).filter_by(email=email).first()
+        return SESSION.query(Client).filter_by(email=email).one_or_none()
 
     def get_all(self):
         return SESSION.query(Client).all()
+    
+    def get_all_their_clients(self, staff_member_id):
+        return SESSION.query(Client).filter_by(
+            commercial_contact_id=staff_member_id
+        )
 
     def create_client(self, datas, staff_id):
         client = Client(
@@ -33,7 +38,7 @@ class ClientRepository:
         SESSION.commit()
 
     def update_client(self, client_id, column, new_value):
-        client = SESSION.query(Client).filter_by(id=client_id).first()
+        client = SESSION.query(Client).filter_by(id=client_id).one_or_none()
         if column == "fullname":
             client.fullname = new_value
         if column == "email":
@@ -47,10 +52,10 @@ class ClientRepository:
 
 class EventRepository:
     def find_by_name(self, name):
-        return SESSION.query(Event).filter(Event.name == name).first()
+        return SESSION.query(Event).filter(Event.name == name).one_or_none()
 
     def find_by_id(self, id):
-        return SESSION.query(Event).filter(Event.id == id).first()
+        return SESSION.query(Event).filter(Event.id == id).one_or_none()
 
     def find_by_client(self, client_id):
         return SESSION.query(Event).filter_by(client_id=client_id).all()
@@ -66,10 +71,10 @@ class EventRepository:
             support_contact_id=staff_member_id
         )
 
-    def create_event(self, datas, client_id):
+    def create_event(self, datas, client_id, contract_id):
         event = Event(
             name=datas["name"],
-            contract_id=datas["contract_id"],
+            contract_id=contract_id,
             client_id=client_id,
             event_date_start=datas["event_date_start"],
             event_date_end=datas["event_date_end"],
@@ -81,7 +86,7 @@ class EventRepository:
         SESSION.commit()
 
     def update_event(self, event_id, column, new_value):
-        event = SESSION.query(Event).filter_by(id=event_id).first()
+        event = SESSION.query(Event).filter_by(id=event_id).one_or_none()
         if column == "name":
             event.name = new_value
         elif column == "contract_id":
@@ -106,7 +111,7 @@ class EventRepository:
 
 class ContractRepository:
     def find_by_id(self, id):
-        return SESSION.query(Contract).filter(Contract.id == id).first()
+        return SESSION.query(Contract).filter(Contract.id == id).one_or_none()
 
     def find_by_client(self, client_id):
         return SESSION.query(Contract).filter_by(client_id=client_id).all()
@@ -116,6 +121,9 @@ class ContractRepository:
 
     def get_all_unsigned(self):
         return SESSION.query(Contract).filter_by(status=False)
+
+    def get_all_contracts_without_event(self):
+        return SESSION.query(Contract).filter_by(event=None).all()
 
     def get_all_with_positive_balance_due(self):
         return SESSION.query(Contract).filter(Contract.balance_due > 0)
@@ -134,7 +142,7 @@ class ContractRepository:
         SESSION.commit()
 
     def update_contract(self, contract_id, column, new_value):
-        contract = SESSION.query(Contract).filter_by(id=contract_id).first()
+        contract = SESSION.query(Contract).filter_by(id=contract_id).one_or_none()
         if column == "client_id":
             client = ClientRepository().find_by_id(int(new_value))
             contract.client_id = new_value
@@ -157,7 +165,7 @@ class StaffRepository:
         return SESSION.query(Staff).all()
 
     def find_by_id(self, id):
-        return SESSION.query(Staff).filter(Staff.id == id).first()
+        return SESSION.query(Staff).filter(Staff.id == id).one_or_none()
 
     def find_by_name_and_firstname(self, name, first_name):
         return (
@@ -167,7 +175,7 @@ class StaffRepository:
         )
 
     def find_by_email(self, email):
-        return SESSION.query(Staff).filter_by(email=email).all()
+        return SESSION.query(Staff).filter_by(email=email).one_or_none()
 
     def create_staff(self, datas):
         staff = Staff(
@@ -184,7 +192,7 @@ class StaffRepository:
         )
 
     def update_staff(self, staff_id, column, new_value):
-        staff_member = SESSION.query(Staff).filter_by(id=staff_id).first()
+        staff_member = SESSION.query(Staff).filter_by(id=staff_id).one_or_none()
         if column == "name":
             staff_member.name = new_value
         elif column == "first_name":

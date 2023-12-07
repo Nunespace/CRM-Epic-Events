@@ -83,7 +83,6 @@ class Event(Base):
         return f"Event(id={self.id!r}, name={self.name!r}, location={self.location!r})"
 
 
-
 class Contract(Base):
     __tablename__ = "contract"
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -99,7 +99,6 @@ class GetDatas:
         elif table == "event":
             self.blue_console.print("Veuillez taper les données suivantes.")
             name = input("Nom de l'évènement : ").capitalize()
-            contract_id = input("numéro (id) du contrat : ")
             self.blue_console.print(
                 "Indiquer la date et l'heure du début de l'évènement :"
             )
@@ -113,7 +112,6 @@ class GetDatas:
             notes = input("Notes : ")
             datas = {
                 "name": name,
-                "contract_id": contract_id,
                 "event_date_start": event_date_start,
                 "event_date_end": event_date_end,
                 "location": location,
@@ -152,10 +150,30 @@ class GetDatas:
             return datas
 
     def get_datetime(self):
-        year = IntPrompt.ask("année (ex : 2023) : ")
-        month = IntPrompt.ask("mois (ex : 01): ")
-        day = IntPrompt.ask("jour (ex : 04): ")
-        hour = IntPrompt.ask("heure (ex : 14): ")
+        year = Prompt.ask("année (ex : 2023) : ")
+        while re.fullmatch(r"\d{4}", year) is None:
+            self.blue_console.print(
+                "Veuillez taper un nombre à 4 chiffres. Exemple : 2024"
+            )
+            year = Prompt.ask("année")
+        month = Prompt.ask("mois (ex : 01): ")
+        while re.fullmatch(r"\d{2}", month) is None:
+            self.blue_console.print(
+                "Veuillez taper un nombre à 2 chiffres. Exemple : 02"
+            )
+            month = Prompt.ask("mois")
+        day = Prompt.ask("jour (ex : 04): ")
+        while re.fullmatch(r"\d{2}", day) is None:
+            self.blue_console.print(
+                "Veuillez taper un nombre à 2 chiffres. Exemple : 25"
+            )
+            day = Prompt.ask("jour")
+        hour = Prompt.ask("heure (ex : 14): ")
+        while re.fullmatch(r"\d{2}", hour) is None:
+            self.blue_console.print(
+                "Veuillez taper un nombre à 2 chiffres. Exemple : 15"
+            )
+            hour = Prompt.ask("heure")
         date_time = f"{year}-{month}-{day} {hour}:00"
         return date_time
 
@@ -198,8 +216,8 @@ class GetDatas:
                 return new_value
 
     def get_support_contact(self):
-        support_contact = input(
-            "Veuillez taper le nom ou l'id du collaborateur support de l'évènement : "
+        support_contact = IntPrompt.ask(
+            "Veuillez taper l'id du collaborateur support de l'évènement : "
         )
         return support_contact.capitalize()
 
@@ -207,10 +225,10 @@ class GetDatas:
         self.blue_console.print("Liste des départements : ")
         for department in Department:
             self.blue_console.print(f"{department.name} : {department.value}")
-        department_number = input(
-            "Veuillez entrer le n° du département choisi : "
+        department_number = IntPrompt.ask(
+            "Veuillez entrer le n° du département", choices=["1", "2", "3"]
         )
-        department = Department(int(department_number))
+        department = Department(department_number)
         return department.name
 
     def clean(self):

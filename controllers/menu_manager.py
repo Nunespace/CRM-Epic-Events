@@ -72,10 +72,28 @@ class MenuManager:
                 self.messages.message_error(table, 3)
                 return self.choice_main_menu()
             elif return_of_order == "unknown_client":
-                self.messages.message_error(table, 4)
+                self.messages.message_error("client", 4)
+                return self.choice_main_menu()
+            elif return_of_order == "unknown_contract":
+                self.messages.message_error("contract", 4)
+                return self.choice_main_menu()
+            elif return_of_order == "unknown_event":
+                self.messages.message_error("event", 4)
+                return self.choice_main_menu()
+            elif return_of_order == "unknown_staff":
+                self.messages.message_error("staff", 4)
+                return self.choice_main_menu()
+            elif return_of_order == "staff_not_support":
+                self.messages.message_error("staff", 8)
                 return self.choice_main_menu()
             elif return_of_order == "not_allowed":
                 self.messages.message_error(table, 5)
+                return self.choice_main_menu()
+            elif return_of_order == "unsigned_contract":
+                self.messages.message_error(table, 6)
+                return self.choice_main_menu()
+            elif return_of_order == "existing_event":
+                self.messages.message_error(table, 7)
                 return self.choice_main_menu()
             elif return_of_order == "Retour":
                 return self.choice_submenu(table)
@@ -96,6 +114,9 @@ class MenuManager:
 
             elif return_of_order == "not_allowed":
                 self.messages.message_error(table, 5)
+                return self.choice_main_menu()
+            elif return_of_order == "unknown_staff":
+                self.messages.message_error("staff", 4)
                 return self.choice_main_menu()
             else:
                 self.messages.message_error(table, 3)

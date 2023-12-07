@@ -15,31 +15,39 @@ class Messages:
                     "Le client a bien été enregistré.", style=self.ok_style
                 )
             elif table == "event":
-                print(
+                self.console.print(
                     "L'évènement a bien été enregistré.", style=self.ok_style
                 )
             elif table == "contract":
-                print("Le contrat a bien été enregistré.", style=self.ok_style)
+                self.console.print(
+                    "Le contrat a bien été enregistré.", style=self.ok_style
+                )
             elif table == "staff":
-                print(
+                self.console.print(
                     "Le collaborateur a bien été enregistré.",
                     style=self.ok_style,
                 )
 
         elif message_number == 2:
             if table == "client":
-                print("Le client a bien été modifié.", style=self.ok_style)
+                self.console.print(
+                    "Le client a bien été modifié.", style=self.ok_style
+                )
             elif table == "event":
-                print("L'évènement a bien été modifié.", style=self.ok_style)
+                self.console.print(
+                    "L'évènement a bien été modifié.", style=self.ok_style
+                )
             elif table == "contract":
-                print("Le contrat a bien été modifié.", style=self.ok_style)
+                self.console.print(
+                    "Le contrat a bien été modifié.", style=self.ok_style
+                )
             elif table == "staff":
-                print(
+                self.console.print(
                     "Le collaborateur a bien été modifié.", style=self.ok_style
                 )
 
         elif message_number == 3 and table == "staff":
-            print(
+            self.console.print(
                 "Le collaborateur a bien été supprimé de la base de données.",
                 style=self.ok_style,
             )
@@ -84,3 +92,18 @@ class Messages:
                 "Vous n'êtes pas autorisé à effectuer cette action.",
                 style=self.error_style,
             )
+        elif message_number == 6:
+            self.console.print(
+                "Ce contrat n'est pas signé.", style=self.error_style
+            )
+        elif message_number == 7:
+            self.console.print(
+                "Un évènement associé à ce contrat existe déjà dans la base de données.",
+                style=self.error_style,
+            )
+        elif message_number == 8:
+            self.console.print(
+                "Le collaborateur doit faire parti du service Support.",
+                style=self.error_style,
+            )
+        
