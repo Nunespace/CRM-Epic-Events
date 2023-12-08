@@ -1,6 +1,6 @@
 import jwt
 import time
-from settings import SECRET, SESSION
+from settings import SECRET, SESSION, ALGORITHME
 from views.messages import Messages
 from views.menu import Menu
 from models.models import Staff
@@ -17,7 +17,7 @@ class Permissions:
         l'application se ferme.
         """
         try:
-            return jwt.decode(token, SECRET, algorithms="HS256")
+            return jwt.decode(token, SECRET, algorithms=ALGORITHME)
         except jwt.ExpiredSignatureError:
             self.menu.clean()
             self.messages.message_error(table=None, message_number=2)
@@ -25,6 +25,7 @@ class Permissions:
             time.sleep(3)
             SESSION.close()
             exit()
+
 
     def permission_create(self, token, table):
         if self.check_token_validity(token) is not False:

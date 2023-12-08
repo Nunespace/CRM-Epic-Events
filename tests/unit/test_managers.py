@@ -59,6 +59,9 @@ class TestCrud:
             "controllers.permissions.Permissions.permission_create",
             return_value=True,
         )
+        mock_update_contract = mocker.patch(
+            "models.repository.ClientRepository.create_client"
+        )
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
@@ -98,11 +101,140 @@ class TestCrud:
             "controllers.permissions.Permissions.permission_create",
             return_value=True,
         )
+        mock_update_contract = mocker.patch(
+            "models.repository.ContractRepository.create_contract"
+        )
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
         assert sut.create("contract") == "creation_ok"
+
+    def test_create_event_ok(
+        self,
+        mocker,
+        get_datas_create_event_fixture,
+        staff_user_commercial_and_token_fixture,
+    ):
+        mocker.patch(
+            "views.get_datas.GetDatas.get_create_datas",
+            return_value=get_datas_create_event_fixture,
+        )
+        mocker.patch(
+            "controllers.permissions.Permissions.permission_create",
+            return_value=True,
+        )
+        mock_ask = mocker.patch(
+            "views.get_datas.Prompt.ask",
+            side_effect=["Smith", "John"],
+        )
+        mock_ask = mocker.patch(
+            "views.get_datas.IntPrompt.ask",
+            side_effect=[160],
+        )
+        mocker.patch(
+            "controllers.permissions.Permissions.is_own_client",
+            return_value=True,
+        )
+
+        mock_update_event = mocker.patch(
+            "models.repository.EventRepository.create_event"
+        )
+        sut = CrudManager(
+            staff_user_commercial_and_token_fixture[0],
+            staff_user_commercial_and_token_fixture[1],
+        )
+        assert sut.create("event") == 'creation_ok'
+
+    def test_create_event_with_unknown_client(
+        self,
+        mocker,
+        get_datas_create_event_fixture,
+        staff_user_commercial_and_token_fixture,
+    ):
+        mocker.patch(
+            "views.get_datas.GetDatas.get_create_datas",
+            return_value=get_datas_create_event_fixture,
+        )
+        mocker.patch(
+            "controllers.permissions.Permissions.permission_create",
+            return_value=True,
+        )
+        mock_ask = mocker.patch(
+            "views.get_datas.Prompt.ask",
+            side_effect=["Client", "unknown"],
+        )
+
+        sut = CrudManager(
+            staff_user_commercial_and_token_fixture[0],
+            staff_user_commercial_and_token_fixture[1],
+        )
+        assert sut.create("event") == 'unknown_client'
+
+    def test_create_event_with_unsigned_contract(
+        self,
+        mocker,
+        get_datas_create_event_fixture,
+        staff_user_commercial_and_token_fixture,
+    ):
+        mocker.patch(
+            "views.get_datas.GetDatas.get_create_datas",
+            return_value=get_datas_create_event_fixture,
+        )
+        mocker.patch(
+            "controllers.permissions.Permissions.permission_create",
+            return_value=True,
+        )
+        mock_ask = mocker.patch(
+            "views.get_datas.Prompt.ask",
+            side_effect=["Smith", "John"],
+        )
+        mock_ask = mocker.patch(
+            "views.get_datas.IntPrompt.ask",
+            side_effect=[10],
+        )
+
+        sut = CrudManager(
+            staff_user_commercial_and_token_fixture[0],
+            staff_user_commercial_and_token_fixture[1],
+        )
+        assert sut.create("event") == "unsigned_contract"
+
+    def test_create_event_not_ok_existing(
+        self,
+        mocker,
+        get_datas_create_event_fixture,
+        staff_user_commercial_and_token_fixture,
+    ):
+        mocker.patch(
+            "views.get_datas.GetDatas.get_create_datas",
+            return_value=get_datas_create_event_fixture,
+        )
+        mocker.patch(
+            "controllers.permissions.Permissions.permission_create",
+            return_value=True,
+        )
+        mock_ask = mocker.patch(
+            "views.get_datas.Prompt.ask",
+            side_effect=["Smith", "John"],
+        )
+        mock_ask = mocker.patch(
+            "views.get_datas.IntPrompt.ask",
+            side_effect=[4],
+        )
+        mocker.patch(
+            "controllers.permissions.Permissions.is_own_client",
+            return_value=True,
+        )
+
+        mock_update_event = mocker.patch(
+            "models.repository.EventRepository.create_event"
+        )
+        sut = CrudManager(
+            staff_user_commercial_and_token_fixture[0],
+            staff_user_commercial_and_token_fixture[1],
+        )
+        assert sut.create("event") == 'existing_event'
 
     def test_create_contract_with_unknown_client(
         self,
@@ -139,6 +271,9 @@ class TestCrud:
             "controllers.permissions.Permissions.permission_create",
             return_value=True,
         )
+        mock_update_contract = mocker.patch(
+            "models.repository.StaffRepository.create_staff"
+        )
         sut = CrudManager(
             staff_user_management_and_token_fixture[0],
             staff_user_management_and_token_fixture[1],
@@ -162,7 +297,18 @@ class TestCrud:
         )
         assert sut.create("staff") == "not_allowed"
 
-    def test_read_client(
+    def test_read_client_fullname(
+        self, mocker, staff_user_commercial_and_token_fixture
+    ):
+        mocker.patch("views.menu.Menu.view_menu_read_only", return_value=2)
+        mocker.patch("views.get_datas.GetDatas.get_fullname", return_value="John Smith")
+        sut = CrudManager(
+            staff_user_commercial_and_token_fixture[0],
+            staff_user_commercial_and_token_fixture[1],
+        )
+        assert sut.read("client") == "display_ok"
+
+    def test_read_client_id(
         self, mocker, staff_user_commercial_and_token_fixture
     ):
         mocker.patch("views.menu.Menu.view_menu_read_only", return_value=3)
@@ -304,18 +450,21 @@ class TestCrud:
             "controllers.permissions.Permissions.permission_update",
             return_value=True,
         )
-        mocker.patch("views.menu.Menu.choice_column_to_update", return_value="fullname")
+        mocker.patch(
+            "views.menu.Menu.choice_column_to_update", return_value="fullname"
+        )
         mocker.patch(
             "views.get_datas.GetDatas.get_new_value",
             return_value="Martin Dupond",
         )
         mock_update_client = mocker.patch(
-            "models.repository.ClientRepository.update_client")
+            "models.repository.ClientRepository.update_client"
+        )
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        #mock_update_client.assert_called()
+        # mock_update_client.assert_called()
         assert sut.update("client") == "update_ok"
 
     def test_update_contract(
@@ -326,10 +475,13 @@ class TestCrud:
             "controllers.permissions.Permissions.permission_update",
             return_value=True,
         )
-        mocker.patch("views.menu.Menu.choice_column_to_update", return_value="client_id")
+        mocker.patch(
+            "views.menu.Menu.choice_column_to_update", return_value="client_id"
+        )
         mocker.patch("views.get_datas.GetDatas.get_new_value", return_value=3)
         mock_update_contract = mocker.patch(
-            "models.repository.ContractRepository.update_contract")
+            "models.repository.ContractRepository.update_contract"
+        )
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
@@ -345,7 +497,10 @@ class TestCrud:
             return_value=True,
         )
         mocker.patch(
-            "views.get_datas.GetDatas.get_support_contact", return_value=4
+            "views.get_datas.GetDatas.get_support_contact", return_value=119
+        )
+        mock_update_contract = mocker.patch(
+            "models.repository.EventRepository.update_event"
         )
         sut = CrudManager(
             staff_user_management_and_token_fixture[0],
@@ -360,48 +515,45 @@ class TestCrud:
             "views.get_datas.GetDatas.get_name_and_first_name_staff",
             return_value=("Henry", "Thierry"),
         )
-        mocker.patch("views.menu.Menu.choice_column_to_update", return_value=3)
+        mocker.patch(
+            "views.menu.Menu.choice_column_to_update", return_value="email"
+        )
         mocker.patch(
             "views.get_datas.GetDatas.get_new_value",
             return_value="nouvel_email@gmail.com",
+        )
+        mock_update_contract = mocker.patch(
+            "models.repository.StaffRepository.update_staff"
         )
         sut = CrudManager(
             staff_user_management_and_token_fixture[0],
             staff_user_management_and_token_fixture[1],
         )
         assert sut.update("staff") == "update_ok"
-"""
-    @classmethod
-    def teardown_class(cls):
-        client = (
-            SESSION.query(Client)
-            .filter(Client.fullname == "Cyril Dupont")
-            .first()
-        )
-        if client is not None:
-            SESSION.delete(client)
-        contract = (
-            SESSION.query(Contract).filter(Contract.client_id == 1).first()
-        )
-        if contract is not None:
-            SESSION.delete(contract)
 
-        staff = SESSION.query(Staff).filter(Staff.name == "Gandriau").first()
-        if staff is not None:
-            SESSION.delete(staff)
-
-        contract_update = (
-            SESSION.query(Contract).filter(Contract.id == 2).first()
+    def test_delete_staff(
+        self, mocker, staff_user_management_and_token_fixture
+    ):
+        mocker.patch(
+            "controllers.permissions.Permissions.permission_create",
+            return_value=True,
         )
-        contract_update.client_id = 2
-        try:
-            SESSION.commit()
-        except:
-            SESSION.rollback()
-            raise
-        finally:
-            SESSION.close()
-"""
+        mocker.patch(
+            "views.get_datas.GetDatas.get_id",
+            return_value=119,
+        )
+        mock_update_contract = mocker.patch(
+            "models.repository.StaffRepository.delete_staff"
+        )
+        mock_ask = mocker.patch(
+            "controllers.crud_manager.Confirm.ask",
+            side_effect=["y"],
+        )
+        sut = CrudManager(
+            staff_user_management_and_token_fixture[0],
+            staff_user_management_and_token_fixture[1],
+        )
+        assert sut.delete("staff") == "delete_ok"
 
 
 class TestMenuManager:
@@ -450,8 +602,12 @@ class TestMenuManager:
             "controllers.crud_manager.CrudManager.update",
             return_value="error",
         )
-        mock_message_error = mocker.patch("views.messages.Messages.message_error")
-        mock_message_error.return_value = "Une erreur s'est produite. Veuillez recommencer."
+        mock_message_error = mocker.patch(
+            "views.messages.Messages.message_error"
+        )
+        mock_message_error.return_value = (
+            "Une erreur s'est produite. Veuillez recommencer."
+        )
         mock_choice_main_menu = mocker.patch(
             "controllers.login_manager.MenuManager.choice_main_menu"
         )
@@ -473,8 +629,12 @@ class TestMenuManager:
             "controllers.crud_manager.CrudManager.update",
             return_value="not_allowed",
         )
-        mock_message_error = mocker.patch("views.messages.Messages.message_error")
-        mock_message_error.return_value = "Vous n'êtes pas autorisé(e) à effectuer cette action."
+        mock_message_error = mocker.patch(
+            "views.messages.Messages.message_error"
+        )
+        mock_message_error.return_value = (
+            "Vous n'êtes pas autorisé(e) à effectuer cette action."
+        )
         mock_choice_main_menu = mocker.patch(
             "controllers.login_manager.MenuManager.choice_main_menu"
         )
@@ -489,17 +649,6 @@ class TestMenuManager:
 
 
 class TestPermissions:
-    def test_check_token_validity_with(self, mocker):
-        token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDExOTQ2NjEsImRlcGFydG1lbnQiOiJDT01NRVJDSUFMIn0.skKnyJwwNUh4QdClbJ5OvVaWtbxpEFRXA7ufDcjrKZk"
-        mock_message_error = mocker.patch(
-            "views.messages.Messages.message_error"
-        )
-        mock_message_error.return_value = "Veuillez fermer l'application et vous authentifier de nouveau avec la commande : 'pipenv run python main.py'"
-        # with pytest.raises(ExpiredSignatureError):
-        check_token = permissions.Permissions()
-        assert check_token.check_token_validity(token) is False
-        # mock_message_error.assert_called_once_with("client", 2)
-
     def test_permission_create_client(self, mocker):
         mocker.patch(
             "controllers.permissions.Permissions.check_token_validity",
@@ -524,11 +673,24 @@ class TestPermissions:
         perm_update = permissions.Permissions()
         assert perm_update.permission_update(1, 1, "token", "client") is True
 
-    def test_permission_update_event(self, mocker):
+    def test_permission_update_event_with_staff_support(self, mocker):
         # un collaborateur Support peut modifier les événements dont il est responsable
         mocker.patch(
             "controllers.permissions.Permissions.check_token_validity",
             return_value={"exp": 1701208489, "department": "SUPPORT"},
+        )
+        mock_is_their_event = mocker.patch(
+            "controllers.permissions.Permissions.is_their_event"
+        )
+        perm_update = permissions.Permissions()
+        perm_update.permission_update(3, 4, "token", "event")
+        mock_is_their_event.assert_called_once()
+
+    def test_permission_update_event_with_staff_management(self, mocker):
+        # un collaborateur Support peut modifier les événements dont il est responsable
+        mocker.patch(
+            "controllers.permissions.Permissions.check_token_validity",
+            return_value={"exp": 1701208489, "department": "MANAGEMENT"},
         )
         perm_update = permissions.Permissions()
         assert perm_update.permission_update(3, 4, "token", "event") is True
@@ -539,4 +701,4 @@ class TestPermissions:
 
     def test_is_their_event(self):
         their_event = permissions.Permissions()
-        assert their_event.is_their_event(3, 4) is True
+        assert their_event.is_their_event(4, 1) is True
