@@ -1,4 +1,6 @@
+from unittest.mock import MagicMock
 from models.models import Client, Staff, Contract
+from models.repository import ClientRepository
 from controllers.crud_manager import CrudManager
 from settings import SESSION
 from controllers import login_manager, menu_manager, permissions
@@ -169,7 +171,7 @@ class TestCrud:
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("client") is True
+        assert sut.read("client") == "display_ok"
 
     def test_read_contract_ok(
         self, mocker, staff_user_commercial_and_token_fixture
@@ -180,35 +182,35 @@ class TestCrud:
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("contract") is True
+        assert sut.read("contract") == "display_ok"
 
     def test_read_contract_with_unknown_client(
         self, mocker, staff_user_commercial_and_token_fixture
     ):
-        mocker.patch("views.menu.Menu.view_menu_read_only", return_value=2)
+        mocker.patch("views.menu.Menu.view_menu_read_only", return_value=4)
         mocker.patch(
-            "views.get_datas.GetDatas.get_fullname",
-            return_value="unknown client",
+            "views.get_datas.GetDatas.get_id",
+            return_value=1999,
         )
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("contract") is False
+        assert sut.read("contract") is None
 
     def test_read_contract_with_unknown_event(
         self, mocker, staff_user_commercial_and_token_fixture
     ):
-        mocker.patch("views.menu.Menu.view_menu_read_only", return_value=4)
+        mocker.patch("views.menu.Menu.view_menu_read_only", return_value=6)
         mocker.patch(
-            "views.get_datas.GetDatas.get_name_event",
-            return_value="unknown event",
+            "views.get_datas.GetDatas.get_id",
+            return_value=1999,
         )
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("contract") is False
+        assert sut.read("contract") is None
 
     def test_read_event_ok(
         self, mocker, staff_user_commercial_and_token_fixture
@@ -219,23 +221,23 @@ class TestCrud:
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("event") is True
+        assert sut.read("event") == "display_ok"
 
     def test_read_event_not_exist(
         self, mocker, staff_user_commercial_and_token_fixture
     ):
-        mocker.patch("views.menu.Menu.view_menu_read_only", return_value=2)
+        mocker.patch("views.menu.Menu.view_menu_read_only", return_value=3)
         mocker.patch(
-            "views.get_datas.GetDatas.get_name_event",
-            return_value="event that doesn't exist",
+            "views.get_datas.GetDatas.get_id",
+            return_value=1999,
         )
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("event") is False
+        assert sut.read("event") is None
 
-    def test_read_event_with_no_existent_client(
+    def test_read_event_with_no_unknown_client(
         self, mocker, staff_user_commercial_and_token_fixture
     ):
         mocker.patch("views.menu.Menu.view_menu_read_only", return_value=4)
@@ -247,7 +249,7 @@ class TestCrud:
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("event") is False
+        assert sut.read("event") is None
 
     def test_read_staff_ok(
         self, mocker, staff_user_commercial_and_token_fixture
@@ -258,7 +260,7 @@ class TestCrud:
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("staff") is True
+        assert sut.read("staff") == "display_ok"
 
     def test_read_staff_with_name_and_first_name_not_exist(
         self, mocker, staff_user_commercial_and_token_fixture
@@ -275,7 +277,7 @@ class TestCrud:
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("staff") is False
+        assert sut.read("staff") is None
 
     def test_read_staff_with_email_not_exist(
         self, mocker, staff_user_commercial_and_token_fixture
@@ -289,28 +291,31 @@ class TestCrud:
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
-        assert sut.read("staff") is False
+        assert sut.read("staff") is None
 
     def test_update_client(
         self, mocker, staff_user_commercial_and_token_fixture
     ):
         mocker.patch(
             "views.get_datas.GetDatas.get_fullname",
-            return_value="Cyril Dupont",
+            return_value="Martin Durand",
         )
         mocker.patch(
             "controllers.permissions.Permissions.permission_update",
             return_value=True,
         )
-        mocker.patch("views.menu.Menu.choice_column_to_update", return_value=1)
+        mocker.patch("views.menu.Menu.choice_column_to_update", return_value="fullname")
         mocker.patch(
             "views.get_datas.GetDatas.get_new_value",
-            return_value="Henri Dupond",
+            return_value="Martin Dupond",
         )
+        mock_update_client = mocker.patch(
+            "models.repository.ClientRepository.update_client")
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
         )
+        #mock_update_client.assert_called()
         assert sut.update("client") == "update_ok"
 
     def test_update_contract(
@@ -321,9 +326,10 @@ class TestCrud:
             "controllers.permissions.Permissions.permission_update",
             return_value=True,
         )
-        # column_to_update = 1 = id du client
-        mocker.patch("views.menu.Menu.choice_column_to_update", return_value=1)
+        mocker.patch("views.menu.Menu.choice_column_to_update", return_value="client_id")
         mocker.patch("views.get_datas.GetDatas.get_new_value", return_value=3)
+        mock_update_contract = mocker.patch(
+            "models.repository.ContractRepository.update_contract")
         sut = CrudManager(
             staff_user_commercial_and_token_fixture[0],
             staff_user_commercial_and_token_fixture[1],
@@ -338,10 +344,8 @@ class TestCrud:
             "controllers.permissions.Permissions.permission_update",
             return_value=True,
         )
-        # column_to_update = 3 = id du client
-        # mocker.patch("views.menu.Menu.choice_column_to_update", return_value=3)
         mocker.patch(
-            "views.get_datas.GetDatas.get_support_contact", return_value=3
+            "views.get_datas.GetDatas.get_support_contact", return_value=4
         )
         sut = CrudManager(
             staff_user_management_and_token_fixture[0],
@@ -366,7 +370,7 @@ class TestCrud:
             staff_user_management_and_token_fixture[1],
         )
         assert sut.update("staff") == "update_ok"
-
+"""
     @classmethod
     def teardown_class(cls):
         client = (
@@ -397,6 +401,7 @@ class TestCrud:
             raise
         finally:
             SESSION.close()
+"""
 
 
 class TestMenuManager:

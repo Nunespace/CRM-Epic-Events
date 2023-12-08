@@ -82,8 +82,8 @@ class CrudManager:
                     return "error"
         return "not_allowed"
 
-    def read(self, table, staff_user):
-        option = self.menu.view_menu_read_only(table, staff_user)
+    def read(self, table):
+        option = self.menu.view_menu_read_only(table, self.staff_user)
         if self.permissions.check_token_validity(self.token):
             if table != "contract" and option == 5:
                 return "back"

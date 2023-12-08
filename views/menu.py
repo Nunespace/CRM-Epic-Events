@@ -230,8 +230,9 @@ class Menu:
                     2: "first_name",
                     3: "email",
                     4: "password",
-                    5: "Retour",
-                    6: "Fermer",
+                    5: "department",
+                    6: "Retour",
+                    7: "Fermer",
                 }
             self.blue_console.print("Liste des champs modifiables : ")
             print()
@@ -255,6 +256,11 @@ class Menu:
                         "8",
                         "9",
                     ],
+                )
+            elif table == "staff":
+                number_column_to_update = IntPrompt.ask(
+                    "Entrer votre choix : ",
+                    choices=["1", "2", "3", "4", "5", "6", "7"],
                 )
             else:
                 number_column_to_update = IntPrompt.ask(

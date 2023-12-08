@@ -2,7 +2,7 @@ import sentry_sdk
 import logging
 from sqlalchemy import text
 from settings import SESSION, ENGINE
-from .models import Client, Event, Contract, Staff
+from .models import Client, Event, Contract, Staff, Department
 
 
 class ClientRepository:
@@ -192,6 +192,7 @@ class StaffRepository:
         )
 
     def update_staff(self, staff_id, column, new_value):
+        print("new_value : ", new_value)
         staff_member = SESSION.query(Staff).filter_by(id=staff_id).one_or_none()
         if column == "name":
             staff_member.name = new_value
@@ -202,7 +203,7 @@ class StaffRepository:
         elif column == "password":
             staff_member.password = new_value
         elif column == "department":
-            staff_member.department == new_value
+            staff_member.department = new_value
         SESSION.commit()
         logging.info(
             f"Le {column} du collaborateur {staff_member.first_name} {staff_member.name} a été modifié."

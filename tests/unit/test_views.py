@@ -3,34 +3,47 @@ from views import menu, get_datas
 
 class TestMenu:
     def test_main_menu(self, mocker):
-        mocker.patch("builtins.input", return_value=1)
+        mock_ask = mocker.patch(
+            "views.menu.IntPrompt.ask",
+            side_effect=[1],
+        )
         mocker.patch("views.menu.Menu.clean")
         sut = menu.Menu()
         assert sut.main_menu() == 1
 
     def test_submenu(self, mocker):
-        mocker.patch("builtins.input", return_value=1)
+        mock_ask = mocker.patch(
+            "views.menu.IntPrompt.ask",
+            side_effect=[1],
+        )
         mocker.patch("views.menu.Menu.clean")
         sut = menu.Menu()
         assert sut.submenu("staff") == 1
 
-    def test_view_menu_read_only(self, mocker):
-        mocker.patch("builtins.input", return_value=2)
+    def test_view_menu_read_only(
+        self, mocker, staff_user_commercial_and_token_fixture
+    ):
+        mock_ask = mocker.patch(
+            "views.menu.IntPrompt.ask",
+            side_effect=[2],
+        )
         mocker.patch("views.menu.Menu.clean")
         sut = menu.Menu()
-        assert sut.view_menu_read_only("event") == 2
+        assert (
+            sut.view_menu_read_only(
+                "event", staff_user_commercial_and_token_fixture[0]
+            )
+            == 2
+        )
 
     def test_choice_column_to_update(self, mocker):
-        mocker.patch("builtins.input", return_value=2)
+        mock_ask = mocker.patch(
+            "views.menu.IntPrompt.ask",
+            side_effect=[2],
+        )
         mocker.patch("views.menu.Menu.clean")
         sut = menu.Menu()
         assert sut.choice_column_to_update("contract") == "total_amount"
-
-    @classmethod
-    def teardown_class(cls):
-        # This method is being called after each test case, and it will revert input back to original function
-        views_menu = menu.Menu()
-        views_menu.input = input
 
 
 class TestGetDatas:
@@ -47,19 +60,28 @@ class TestGetDatas:
         )
 
     def test_get_id_client(self, mocker):
-        mocker.patch("builtins.input", return_value="2")
+        mock_ask = mocker.patch(
+            "views.get_datas.IntPrompt.ask",
+            side_effect=[2],
+        )
         get_datas_test = get_datas.GetDatas()
         assert get_datas_test.get_id("client") == 2
 
     def test_get_id_staff(self, mocker):
-        mocker.patch("builtins.input", return_value="4")
+        mock_ask = mocker.patch(
+            "views.get_datas.IntPrompt.ask",
+            side_effect=[4],
+        )
         get_datas_test = get_datas.GetDatas()
         assert get_datas_test.get_id("staff") == 4
 
     def test_get_fullname(self, mocker):
-        mocker.patch("builtins.input", return_value="dupont dupond")
+        mock_ask = mocker.patch(
+            "views.get_datas.Prompt.ask",
+            side_effect=["Dupond", "dupont"],
+        )
         get_datas_test = get_datas.GetDatas()
-        assert get_datas_test.get_name_event() == "Dupont dupond"
+        assert get_datas_test.get_fullname() == "Dupont Dupond"
 
     def test_get_name_event(self, mocker):
         mocker.patch("builtins.input", return_value="noël FFF")
@@ -71,33 +93,48 @@ class TestGetDatas:
         email_checked = get_datas.GetDatas()
         assert email_checked.check_email(email) == email
 
-    def test_check_id(self):
-        id = "4"
-        id_checked = get_datas.GetDatas()
-        assert id_checked.chek_id(id) == 4
-
-    def test_check_status_true(self):
-        status = "1"
+    def test_check_status_true(self, mocker):
+        mock_ask = mocker.patch(
+            "views.get_datas.Prompt.ask",
+            side_effect=["y"],
+        )
         status_checked = get_datas.GetDatas()
-        assert status_checked.check_status(status) is True
+        assert status_checked.get_status_contract() is True
 
-    def test_check_status_false(self):
-        status = "2"
+    def test_check_status_false(self, mocker):
+        mock_ask = mocker.patch(
+            "views.get_datas.Prompt.ask",
+            side_effect=["n"],
+        )
         status_checked = get_datas.GetDatas()
-        assert status_checked.check_status(status) is False
+        assert status_checked.get_status_contract() is False
 
     def test_get_new_value(self, mocker):
         mocker.patch("builtins.input", return_value=3)
         get_datas_test = get_datas.GetDatas()
         assert get_datas_test.get_new_value("client_id") == 3
 
-    def test_get_support_contact(self, mocker):
-        mocker.patch("rich.prompt", return_value="dupont")
+    def test_get_new_value_phone(self, mocker):
+        mock_ask = mocker.patch(
+            "views.get_datas.IntPrompt.ask",
+            side_effect=[202020202],
+        )
         get_datas_test = get_datas.GetDatas()
-        assert get_datas_test.get_support_contact() == "Dupont"
+        assert get_datas_test.get_new_value("phone") == 202020202
+
+    def test_get_support_contact(self, mocker):
+        mock_ask = mocker.patch(
+            "views.get_datas.IntPrompt.ask",
+            side_effect=[2],
+        )
+        get_datas_test = get_datas.GetDatas()
+        assert get_datas_test.get_support_contact() == 2
 
     def test_get_department(self, mocker):
-        mocker.patch("builtins.input", return_value="2")
+        mock_ask = mocker.patch(
+            "views.get_datas.IntPrompt.ask",
+            side_effect=[2],
+        )
         get_datas_test = get_datas.GetDatas()
         assert get_datas_test.get_department() == "SUPPORT"
 

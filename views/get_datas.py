@@ -37,8 +37,10 @@ class GetDatas:
         return id
 
     def get_fullname(self):
-        name = input("Nom du client: ").capitalize()
-        firstname = input("Prénom : ").capitalize()
+        name = Prompt.ask("Nom du client: ")
+        name = name.capitalize()
+        firstname = Prompt.ask("Prénom : ")
+        firstname = firstname.capitalize()
         fullname = firstname + " " + name
         return fullname
 
@@ -207,6 +209,8 @@ class GetDatas:
             return IntPrompt.ask("N° de téléphone")
         elif column == "total_amount" or column == "balance_due":
             return IntPrompt.ask("Nouveau montant")
+        elif column == "department":
+            return self.get_department()
         else:
             new_value = input("Veuillez entrer la nouvelle valeur : ")
             if column == "email":
@@ -217,9 +221,9 @@ class GetDatas:
 
     def get_support_contact(self):
         support_contact = IntPrompt.ask(
-            "Veuillez taper l'id du collaborateur support de l'évènement : "
+            "Veuillez taper l'id du collaborateur support de l'évènement"
         )
-        return support_contact.capitalize()
+        return support_contact
 
     def get_department(self):
         self.blue_console.print("Liste des départements : ")
