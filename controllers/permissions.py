@@ -26,7 +26,6 @@ class Permissions:
             SESSION.close()
             exit()
 
-
     def permission_create(self, token, table):
         if self.check_token_validity(token) is not False:
             token_decode = self.check_token_validity(token)
@@ -73,6 +72,7 @@ class Permissions:
             return False
 
     def is_own_client(self, staff_id, client_id):
+        """Vérifie si le client est bien associé au collaborateur Commercial"""
         staff = SESSION.get(Staff, staff_id)
         clients = staff.clients
         for client in clients:
@@ -81,6 +81,7 @@ class Permissions:
         return False
 
     def is_their_event(self, staff_id, event_id):
+        """Vérifie si l'évènement est bien associé au collaborateur Support"""
         staff = SESSION.get(Staff, staff_id)
         events = staff.events
         for event in events:

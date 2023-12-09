@@ -1,5 +1,4 @@
 from passlib.hash import argon2
-from sentry_sdk import set_user
 from settings import SECRET, ALGORITHME, SESSION
 import jwt
 from datetime import datetime, timedelta, timezone
@@ -33,6 +32,10 @@ class AuthenticationAndPermissions:
         return SESSION.query(Staff).filter(Staff.email == email).one_or_none()
 
     def check_password(self):
+        """ 
+        Vérifie si le mot de passe de l'utilisateur est bien dans la base de donnée après l'avoir hashé
+        Retourne le menu principal si ok ou affiche un message pour recommencer
+        """
         get_datas = GetDatas()
         self.display.log()
         email, password = get_datas.get_credentials()

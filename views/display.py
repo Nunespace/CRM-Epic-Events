@@ -12,6 +12,7 @@ class Display:
         self.console = Console()
 
     def log(self):
+        """ Affiche le message d'accueil"""
         epic_events = Panel(
             "[bold blue]CRM Epic Events",
             expand=False,
@@ -28,6 +29,11 @@ class Display:
         self.clean()
 
     def display_table(self, result, table, all=False):
+        """
+        Affiche le ou les résultats des requêtes
+        Le paramètre all  indique s'il y a plusieurs lignes (True)
+        ou une seule (False)
+        """
         if table == "client":
             table_display = self.table_client(result, all)
         if table == "contract":
@@ -48,6 +54,7 @@ class Display:
         time.sleep(4)
 
     def table_client(self, result, all):
+        """ Construit le tableau client pour affichage"""
         table_display = Table(
             title="Clients", show_lines=True, box=box.MINIMAL_DOUBLE_HEAD
         )

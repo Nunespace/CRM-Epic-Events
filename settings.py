@@ -15,8 +15,8 @@ ALGORITHME = config_jwt["algorithme"]
 config_sentry = config["sentry"]
 DSN = config_sentry["dsn"]
 
-# utilisateur admin est un compte mysql avec une limitation des privilèges sur 
-# la BD epic_events(select, insert, update et delete)
+# utilisateur admin est un compte mysql avec une limitation des privilèges :
+# accès uniquement à la BD epic_events
 # Le paramètre echo=True indique que le SQL émis par les connexions sera affiché sur la sortie standard.
 ENGINE = create_engine(
     f"mysql+pymysql://admin:{password}@localhost/epic_events", echo=False

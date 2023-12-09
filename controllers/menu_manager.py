@@ -37,16 +37,17 @@ class MenuManager:
             exit()
 
     def choice_submenu(self, table):
+        """
+        Il existe un sous-menu par table identique sauf pour la table staff
+        où il y a la possibilité de supprimer un collaborateur en plus
+        """
         option = self.menu.submenu(table)
+
         # Option 1 = Consulter. Dans ce cas, seul la validité du token est vérifiée
         # car tous les collaborateurs authentifiés sont autorisées à lire les données
-
         if option == 1:
             return_of_order = self.crud.read(table)
-            if (
-                return_of_order == "display_ok"
-                or return_of_order == "back"
-            ):
+            if return_of_order == "display_ok" or return_of_order == "back":
                 return self.choice_submenu(table)
             elif return_of_order == "close":
                 SESSION.close()
@@ -56,6 +57,8 @@ class MenuManager:
                 self.messages.message_error(table, 3)
                 return self.choice_main_menu()
 
+        # option = Créer
+        # option 3 = Modifier
         elif option == 2 or option == 3:
             if option == 2:
                 return_of_order = self.crud.create(table)
@@ -101,9 +104,11 @@ class MenuManager:
                 SESSION.close()
                 exit()
 
+        # option 4 = Retour (sauf table staff)
         elif option == 4 and table != "staff":
             return self.choice_main_menu()
 
+        # pour staff, option 4 = supprimer
         elif option == 4 and table == "staff":
             return_of_order = self.crud.delete(table)
             if return_of_order == "delete_ok":
@@ -122,13 +127,16 @@ class MenuManager:
                 self.messages.message_error(table, 3)
                 return self.choice_main_menu()
 
+        # option 5 = Ferme l'application (sauf table staff)
         elif option == 5 and table != "staff":
             SESSION.close()
             exit()
 
+        # pour staff, option 5 = Retour
         elif option == 5 and table == "staff":
             return self.choice_main_menu()
 
+        # pour staff, option 6 ferme l'application
         elif option == 6 and table == "staff":
             SESSION.close()
             exit()

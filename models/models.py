@@ -21,11 +21,17 @@ class Staff(Base):
     password: Mapped[str] = mapped_column(String(500))
     department: Mapped[Department]
 
-    clients: Mapped[List["Client"]] = relationship(back_populates="commercial_contact", lazy="selectin")
+    clients: Mapped[List["Client"]] = relationship(
+        back_populates="commercial_contact", lazy="selectin"
+    )
 
-    contracts: Mapped[List["Contract"]] = relationship(back_populates="commercial_contact", lazy="selectin")
+    contracts: Mapped[List["Contract"]] = relationship(
+        back_populates="commercial_contact", lazy="selectin"
+    )
 
-    events: Mapped[List["Event"]] = relationship(back_populates="support_contact", lazy="selectin")
+    events: Mapped[List["Event"]] = relationship(
+        back_populates="support_contact", lazy="selectin"
+    )
 
     def __repr__(self) -> str:
         return f"Staff(id={self.id!r}, name={self.name!r}, first_name={self.first_name!r})"
@@ -72,7 +78,9 @@ class Event(Base):
     event_date_start: Mapped[datetime]
     event_date_end: Mapped[datetime]
 
-    support_contact_id = mapped_column(ForeignKey("staff.id"), nullable=True, default=None)
+    support_contact_id = mapped_column(
+        ForeignKey("staff.id"), nullable=True, default=None
+    )
     support_contact = relationship("Staff", back_populates="events")
 
     location: Mapped[str] = mapped_column(String(250))

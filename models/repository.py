@@ -1,8 +1,6 @@
-import sentry_sdk
 import logging
-from sqlalchemy import text
-from settings import SESSION, ENGINE
-from .models import Client, Event, Contract, Staff, Department
+from settings import SESSION
+from .models import Client, Event, Contract, Staff
 
 
 class ClientRepository:

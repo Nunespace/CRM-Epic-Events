@@ -17,6 +17,7 @@ pytest-cov = "*"
 click = "*"
 rich = "*"
 setuptools = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 

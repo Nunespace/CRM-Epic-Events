@@ -23,7 +23,7 @@ L’application nécessite un fichier config.ini non présent dans ce dépôt gi
 
 ## Prérequis
 
-L'application aura besoin de **Python**, **Git** et **Pipenv** pour fonctionner. Si besoin, vous pouvez les installer en suivant les instructions sur [cette page](docs/installation_python-git-pipenv.md).
+L'application aura besoin de **Python** (version 3.12), **Git** et **Pipenv** pour fonctionner. Si besoin, vous pouvez les installer en suivant les instructions sur [cette page](docs/installation_python-git-pipenv.md).
 
 L'application utilise le système de gestion de base de données **MySQL**. Pour l'installer, suivez ce lien [Comment installer MySQL](https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7152681-installez-le-sgbd-mysql).
 
@@ -52,19 +52,36 @@ pipenv install
 
 ```
 
-4. Créer la base de données.
+4. Créer le superutilisateur et la base de données.
+
 Ouvrez **MySQL** et taper :
 ```
 CREATE DATABASE epic_events;
 ```
+puis
+```
+CREATE USER "admin"@"localhost" IDENTIFIED BY "password";
+```
+> [!IMPORTANT]  
+> Mettre à la place de password le mot de passe indiqué dans le fichier config.ini
 
-5. Créer un utilisateur de l'équipe Management (qui dispose des permissions pour créer les collaborateurs/utilsateurs).
+et taper:
+```
+GRANT ALL PRIVILEGES ON epic_events.* TO "admin"@"localhost";
+```
+enfin:
+```
+FLUSH PRIVILEGES;
+```
+5. Enregistrer le fichier config.ini dans le répertoire CRM-Epic-Events à la racine du projet
+
+6. Créer un utilisateur de l'équipe Management (qui dispose des permissions pour créer les collaborateurs/utilsateurs).
 Revenir sur le terminal et taper:
 ```
 pipenv run python -m create_db
 ```
  
-6. Démarrer l'application avec :
+7. Démarrer l'application avec :
 ```
 pipenv run python -m login
 ```

@@ -12,7 +12,7 @@ class Menu:
     def main_menu(self):
         """
         Affiche le menu principal
-        retourne le choix de l'utilisateur
+        Retourne le choix de l'utilisateur
         """
         print()
         menu_options = {
@@ -48,7 +48,7 @@ class Menu:
         """
         Affiche le sous menu (client ou contrat ou évenènement ou
         collaborateur)
-        retourne le choix de l'utilisateur
+        Retourne le choix de l'utilisateur
         """
         table_in_french = self.table_name_translation(table)
         print()
@@ -89,8 +89,8 @@ class Menu:
 
     def view_menu_read_only(self, table, staff_user):
         """
-        Affiche le sous menu (client ou contrat ou évenènement ou collaborateur)
-        retourne le choix de l'utilisateur
+        Affiche le menu Consulter
+        Retourne le choix de l'utilisateur
         """
         menu_in_french = self.table_name_translation(table)
         print()
@@ -184,6 +184,8 @@ class Menu:
         return option
 
     def choice_column_to_update(self, table):
+        """ Affiche les différents champs modifiables
+        Retourne [str] le choix de l'utilisateur """
         while True:
             print()
             if table == "client":
