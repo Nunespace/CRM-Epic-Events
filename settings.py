@@ -17,6 +17,7 @@ DSN = config_sentry["dsn"]
 
 # utilisateur admin est un compte mysql avec une limitation des privilèges sur 
 # la BD epic_events(select, insert, update et delete)
+# Le paramètre echo=True indique que le SQL émis par les connexions sera affiché sur la sortie standard.
 ENGINE = create_engine(
     f"mysql+pymysql://admin:{password}@localhost/epic_events", echo=False
 )
