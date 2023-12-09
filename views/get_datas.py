@@ -28,7 +28,7 @@ class GetDatas:
         if table == "client":
             id = IntPrompt.ask("N° (id) du client")
         elif table == "event":
-            id = IntPrompt.ask("N° (id) de l'évènement ")
+            id = IntPrompt.ask("N° (id) de l'évènement")
         elif table == "contract":
             id = IntPrompt.ask("N° (id) du contrat")
         elif table == "staff":
@@ -37,9 +37,9 @@ class GetDatas:
         return id
 
     def get_fullname(self):
-        name = Prompt.ask("Nom du client: ")
+        name = Prompt.ask("Nom du client")
         name = name.capitalize()
-        firstname = Prompt.ask("Prénom : ")
+        firstname = Prompt.ask("Prénom")
         firstname = firstname.capitalize()
         fullname = firstname + " " + name
         return fullname
@@ -143,7 +143,7 @@ class GetDatas:
             password_hashed = self.get_password()
             department = self.get_department()
             datas = {
-                "name": name.capitalize(),
+                "name": name,
                 "first_name": first_name,
                 "email": email,
                 "password": password_hashed,
@@ -152,25 +152,25 @@ class GetDatas:
             return datas
 
     def get_datetime(self):
-        year = Prompt.ask("année (ex : 2023) : ")
+        year = Prompt.ask("année (ex : 2023) ")
         while re.fullmatch(r"\d{4}", year) is None:
             self.blue_console.print(
                 "Veuillez taper un nombre à 4 chiffres. Exemple : 2024"
             )
             year = Prompt.ask("année")
-        month = Prompt.ask("mois (ex : 01): ")
+        month = Prompt.ask("mois (ex : 01) ")
         while re.fullmatch(r"\d{2}", month) is None:
             self.blue_console.print(
                 "Veuillez taper un nombre à 2 chiffres. Exemple : 02"
             )
             month = Prompt.ask("mois")
-        day = Prompt.ask("jour (ex : 04): ")
+        day = Prompt.ask("jour (ex : 04) ")
         while re.fullmatch(r"\d{2}", day) is None:
             self.blue_console.print(
                 "Veuillez taper un nombre à 2 chiffres. Exemple : 25"
             )
             day = Prompt.ask("jour")
-        hour = Prompt.ask("heure (ex : 14): ")
+        hour = Prompt.ask("heure (ex : 14) ")
         while re.fullmatch(r"\d{2}", hour) is None:
             self.blue_console.print(
                 "Veuillez taper un nombre à 2 chiffres. Exemple : 15"
@@ -201,7 +201,9 @@ class GetDatas:
             return False
 
     def get_new_value(self, column):
-        if column == "status":
+        if column == "fullname":
+            return self.get_fullname()
+        elif column == "status":
             return self.get_status_contract()
         elif column == "password":
             return self.get_password()

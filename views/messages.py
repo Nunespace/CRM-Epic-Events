@@ -60,7 +60,7 @@ class Messages:
         elif message_number == 2:
             self.console.print(
                 "Votre session a expiré. L'application va se fermer. Veuillez vous authentifier de nouveau avec la commande : "
-                "'pipenv run python main.py'",
+                "'pipenv run python -m login'",
                 style=self.error_style,
             )
         elif message_number == 3:
@@ -106,4 +106,3 @@ class Messages:
                 "Le collaborateur doit faire parti du service Support.",
                 style=self.error_style,
             )
-        

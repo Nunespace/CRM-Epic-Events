@@ -190,7 +190,6 @@ class StaffRepository:
         )
 
     def update_staff(self, staff_id, column, new_value):
-        print("new_value : ", new_value)
         staff_member = SESSION.query(Staff).filter_by(id=staff_id).one_or_none()
         if column == "name":
             staff_member.name = new_value
