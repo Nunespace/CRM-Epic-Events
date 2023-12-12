@@ -7,7 +7,7 @@ from models.models import Staff
 @pytest.fixture
 def staff_user_commercial_and_token_fixture():
     staff_user = (
-        SESSION.query(Staff).filter(Staff.email == "s@g.c").one_or_none()
+        SESSION.query(Staff).filter(Staff.email == "sarah@gmail.com").one_or_none()
     )
     token = AuthenticationAndPermissions().create_token(
         department=staff_user.department.name
